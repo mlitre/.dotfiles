@@ -1,5 +1,6 @@
 autoload -U +X compinit && compinit
 autoload -U +X bashcompinit &&bashcompinit
+source /home/mlitre/qompoter_bash_completion.sh
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:/snap/bin:$PATH
 

@@ -191,10 +191,11 @@ bindsym $mod+r mode "resize"
 bar {
     font pango: Inconsolata for Powerline, FontAwesome 10
     tray_output none
+    position top
 	status_command ~/Projects/bumblebee-status/bumblebee-status -m disk:root cpu \
 		memory load sensors2 pasink pasource date time\
 		-p root.path=/ time.format="%H:%M CW %V" date.format="%a, %b %d %Y" \
-		-t solarized-powerline
+		-t dracula-powerline
 }
 exec --no-startup-id /usr/bin/feh --bg-scale '/home/mlitre/Pictures/demon_slayer.jpg'
 exec_always --no-startup-id picom -b

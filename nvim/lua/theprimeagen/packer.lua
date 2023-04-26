@@ -23,6 +23,8 @@ return require('packer').startup(function(use)
 
   use 'ThePrimeagen/vim-be-good'
 
+  use 'christoomey/vim-tmux-navigator'
+
   use({
       "folke/trouble.nvim",
       config = function()
@@ -68,7 +70,7 @@ return require('packer').startup(function(use)
   }
 
   use("folke/zen-mode.nvim")
-  use("github/copilot.vim")
+  use("f-person/git-blame.nvim")
   use("eandrju/cellular-automaton.nvim")
   use("laytan/cloak.nvim")
 
