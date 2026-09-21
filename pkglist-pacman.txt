@@ -44,6 +44,7 @@ jq
 socat
 github-cli
 shellcheck
+tailscale
 fastfetch
 ccache
 bitwarden
