@@ -189,7 +189,10 @@ doctor() {
     for t in stow zsh git ghostty nvim herdr rg fd fzf zoxide eza bat wl-copy clangd rust-analyzer gpg dot fuzzel grim slurp satty wf-recorder fastfetch ccache mise docker; do
         if command -v "$t" >/dev/null 2>&1; then printf '  ok   %s\n' "$t"; else printf '  MISS %s\n' "$t"; fi
     done
-    fc-list | grep -qi 'JetBrainsMono Nerd' && echo '  ok   JetBrainsMono Nerd Font' || echo '  MISS JetBrainsMono Nerd Font'
+    # grep -q exits on first match, which SIGPIPEs fc-list; under pipefail that
+    # fails the whole pipeline and the font reads as missing when it is installed.
+    # Drop -q so grep drains stdin and fc-list exits 0.
+    fc-list | grep -i 'JetBrainsMono Nerd' >/dev/null && echo '  ok   JetBrainsMono Nerd Font' || echo '  MISS JetBrainsMono Nerd Font'
     gpu_hint
     [[ -L $HOME/.config ]] && warn "HOME/.config is a symlink: folding happened; run unstow, then stow again"
     for pkg in "${PACKAGES[@]}"; do
