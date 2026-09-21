@@ -2,6 +2,7 @@
 hypr/.config/hypr/config/local.lua
 zsh/.config/zsh/local.zsh
 git/.config/git/local
+btop/.config/btop/btop.conf
 # editor / OS noise
 *.swp
 .DS_Store

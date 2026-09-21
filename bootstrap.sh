@@ -105,17 +105,21 @@ do_stow() {
 
 seed_local_files() {
     local ex
+    # The first three are per-machine overrides you edit. btop.conf is seeded
+    # because btop rewrites its own config in place, expanding it to the full
+    # default template; git-ignoring the real file keeps that out of the repo.
     for ex in "$DOTFILES"/hypr/.config/hypr/config/local.lua.example \
               "$DOTFILES"/zsh/.config/zsh/local.zsh.example \
-              "$DOTFILES"/git/.config/git/local.example; do
+              "$DOTFILES"/git/.config/git/local.example \
+              "$DOTFILES"/btop/.config/btop/btop.conf.example; do
         local real="${ex%.example}"
         local target="$HOME/${real#"$DOTFILES"/*/}"
         if [[ ! -e $real && ! -e $target ]]; then
-            log "seeding $target from example — EDIT IT"
+            log "seeding $target from example"
             run cp "$ex" "$real"     # lands inside the repo, git-ignored, then stowed
         fi
     done
-    if [[ $DRY -eq 0 ]]; then stow -R --no-folding -d "$DOTFILES" -t "$HOME" hypr zsh git >/dev/null; fi
+    if [[ $DRY -eq 0 ]]; then stow -R --no-folding -d "$DOTFILES" -t "$HOME" hypr zsh git btop >/dev/null; fi
 }
 
 do_unstow() {

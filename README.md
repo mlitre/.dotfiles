@@ -23,6 +23,8 @@ Each top-level directory is a stow package that mirrors `$HOME`:
 bin/.local/bin/dot                          # Super+Alt+Space menu, `dot theme`, screenshots, recording, install, update
 ghostty/.config/ghostty/config              # colours come from Noctalia's generated theme
 btop/  fuzzel/  fastfetch/                  # themed by Noctalia templates
+btop/.config/btop/btop.conf.example         # btop rewrites its own config, so the
+                                            # real file is seeded and git-ignored
 noctalia/.config/noctalia/theme.toml        # our extra templates (nvim base16, fuzzel)
 wallpapers/<theme>/                         # not stowed; `dot theme` picks from here
 migrations/NNNN-*.sh                        # run once each by `bootstrap.sh update`
