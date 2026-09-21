@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
-      - run: pacman -Syu --noconfirm --needed git stow zsh shellcheck neovim luacheck
+      - run: pacman -Syu --noconfirm --needed git stow zsh shellcheck neovim luacheck lua
       - uses: actions/checkout@v4
       - name: shellcheck + zsh syntax
         run: |
@@ -21,7 +21,7 @@ jobs:
           stow -n -v --no-folding -d . -t "$H" bin ghostty herdr zsh git hypr uwsm noctalia nvim btop fuzzel fastfetch 2>&1 | tee /tmp/stow.log
           ! grep -iE "conflict|warning" /tmp/stow.log | grep -v "simulation mode"
       - name: lua syntax (hypr + nvim)
-        run: find hypr nvim -name '*.lua' -print0 | xargs -0 -n1 luac -p 2>/dev/null || find hypr nvim -name '*.lua' -print0 | xargs -0 -n1 nvim -l
+        run: find hypr nvim -name '*.lua' -print0 | xargs -0 -n1 luac -p
       - name: nvim boots
         run: |
           export XDG_CONFIG_HOME=$(mktemp -d) XDG_DATA_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
