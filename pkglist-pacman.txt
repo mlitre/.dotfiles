@@ -42,6 +42,8 @@ satty
 wf-recorder
 jq
 socat
+github-cli
+shellcheck
 fastfetch
 ccache
 bitwarden

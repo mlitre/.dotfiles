@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: shellcheck + zsh syntax
         run: |
-          shellcheck bootstrap.sh bin/.local/bin/dot migrations/*.sh
+          shellcheck bootstrap.sh bin/.local/bin/dot bin/.local/bin/hypr-dock-watch migrations/*.sh
           zsh -n zsh/.zshrc zsh/.config/zsh/*.zsh
       - name: no absolute home paths, no dead X11 tooling
         run: |
