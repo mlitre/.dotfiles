@@ -98,7 +98,7 @@ hl.bind(mainMod .. " + ALT + Space",           hl.dsp.exec_cmd("dot menu"))
 hl.bind(mainMod .. " + CONTROL + SHIFT + Space", hl.dsp.exec_cmd("dot theme"))
 hl.bind(mainMod .. " + SHIFT + R",             hl.dsp.exec_cmd("dot record"))
 hl.bind(mainMod .. " + O",                     hl.dsp.exec_cmd(launchPrefix .. "obsidian"))
-hl.bind(mainMod .. " + SHIFT + B",             hl.dsp.exec_cmd(launchPrefix .. "bitwarden"))
+hl.bind(mainMod .. " + SHIFT + B",             hl.dsp.exec_cmd(launchPrefix .. "bitwarden-desktop"))
 
 ---------------------------
 ---- HARDWARE CONTROLS ----
