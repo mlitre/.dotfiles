@@ -197,7 +197,10 @@ doctor() {
     [[ -L $HOME/.config ]] && warn "HOME/.config is a symlink: folding happened; run unstow, then stow again"
     for pkg in "${PACKAGES[@]}"; do
         local sample
-        sample=$(find "$DOTFILES/$pkg" -type f -not -name '*.example' | head -1)
+        # .stow-local-ignore is stow's own control file and is never linked, so
+        # picking it as the probe makes a correctly-stowed package read as missing.
+        sample=$(find "$DOTFILES/$pkg" -type f -not -name '*.example' \
+                      -not -name '.stow-local-ignore' | head -1)
         sample="$HOME/${sample#"$DOTFILES/$pkg/"}"
         [[ -L $sample ]] && printf '  ok   %s linked\n' "$pkg" || printf '  MISS %s not linked (%s)\n' "$pkg" "$sample"
     done
