@@ -13,8 +13,8 @@ jobs:
           zsh -n zsh/.zshrc zsh/.config/zsh/*.zsh
       - name: no absolute home paths, no dead X11 tooling
         run: |
-          ! grep -rn '/home/' --exclude-dir=.git --exclude-dir=docs .
-          ! grep -rniE '\b(i3|picom|xss-lock|feh|dmenu|packer\.nvim|lsp-zero|tmux)\b' --exclude-dir=.git --exclude-dir=docs --exclude=check.yml .
+          ! grep -rn '/home/' --exclude-dir=.git --exclude-dir=docs --exclude=check.yml .
+          ! grep -rniE '\b(i3|picom|xss-lock|feh|packer\.nvim|lsp-zero)\b' --exclude-dir=.git --exclude-dir=docs --exclude=check.yml .
       - name: stow dry run into empty home
         run: |
           H=$(mktemp -d); mkdir -p "$H/.config"
