@@ -1,0 +1,14 @@
+-- Copy to config/local.lua (git-ignored). Overrides variables.lua per machine.
+-- XMG EVO (M24): laptop panel eDP-1 + MSI MD272XP 27" 1920x1080@60 on the dock.
+-- Confirm the external connector name with `hyprctl monitors` (DP-x or HDMI-A-x)
+-- and, if the laptop panel is HiDPI, set its scale (1.25 / 1.5 / 1.6 — Hyprland
+-- warns about fractional values that do not divide the resolution cleanly).
+return {
+    MONITOR1        = "eDP-1",
+    MONITOR2        = "DP-1",
+    PRIMARY_MONITOR = "DP-1",
+    MONITORS = {
+        { output = "DP-1",  mode = "1920x1080@60", position = "0x0",    scale = "1" },
+        { output = "eDP-1", mode = "preferred",    position = "0x1080", scale = "auto" },
+    },
+}

@@ -1,0 +1,4 @@
+# Copy to ~/.config/git/local (git-ignored). One identity everywhere.
+[user]
+	email = you@example.com
+	signingkey = 0xYOURGPGKEYID    # gpg --list-secret-keys --keyid-format long

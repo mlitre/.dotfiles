@@ -1,0 +1,29 @@
+name: check
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm --needed git stow zsh shellcheck neovim luacheck
+      - uses: actions/checkout@v4
+      - name: shellcheck + zsh syntax
+        run: |
+          shellcheck bootstrap.sh bin/.local/bin/dot migrations/*.sh
+          zsh -n zsh/.zshrc zsh/.config/zsh/*.zsh
+      - name: no absolute home paths, no dead X11 tooling
+        run: |
+          ! grep -rn '/home/' --exclude-dir=.git --exclude-dir=docs .
+          ! grep -rniE '\b(i3|picom|xss-lock|feh|dmenu|packer\.nvim|lsp-zero|tmux)\b' --exclude-dir=.git --exclude-dir=docs --exclude=check.yml .
+      - name: stow dry run into empty home
+        run: |
+          H=$(mktemp -d); mkdir -p "$H/.config"
+          stow -n -v --no-folding -d . -t "$H" bin ghostty herdr zsh git hypr uwsm noctalia nvim btop fuzzel fastfetch 2>&1 | tee /tmp/stow.log
+          ! grep -iE "conflict|warning" /tmp/stow.log | grep -v "simulation mode"
+      - name: lua syntax (hypr + nvim)
+        run: find hypr nvim -name '*.lua' -print0 | xargs -0 -n1 luac -p 2>/dev/null || find hypr nvim -name '*.lua' -print0 | xargs -0 -n1 nvim -l
+      - name: nvim boots
+        run: |
+          export XDG_CONFIG_HOME=$(mktemp -d) XDG_DATA_HOME=$(mktemp -d) XDG_STATE_HOME=$(mktemp -d)
+          ln -s "$PWD/nvim/.config/nvim" "$XDG_CONFIG_HOME/nvim"
+          timeout 300 nvim --headless "+Lazy! sync" +qa

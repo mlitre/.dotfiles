@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+# dot — Omarchy-style system menu and helpers for the CachyOS + Noctalia setup.
+#
+#   dot menu                       Super+Alt+Space: everything below in one fuzzel menu
+#   dot theme [name]               switch the whole desktop (Noctalia palette + templates,
+#                                  wallpaper, Neovim) — Super+Ctrl+Shift+Space
+#   dot wallpaper [file]           random wallpaper from the current theme's folder, or set one
+#   dot screenshot [region|annotate|full|window]
+#   dot record                     toggle a wf-recorder screen recording of a region
+#   dot install | dot remove       pick packages with fuzzel (pacman + paru)
+#   dot update                     ~/.dotfiles/bootstrap.sh update (git pull, migrations, restow)
+#   dot keys                       searchable list of Hyprland keybindings
+#   dot power                      lock / suspend / logout / reboot / shutdown
+#   dot theme-state                print the current theme name (used by nvim)
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
+THEME_FILE="$STATE_DIR/theme"
+REC_PID="$STATE_DIR/record.pid"
+mkdir -p "$STATE_DIR"
+
+# theme-name -> Noctalia builtin palette. Folder names under $DOTFILES/wallpapers/<theme>/
+declare -A PALETTE=(
+    [kanagawa]="Kanagawa" [tokyo-night]="Tokyo-Night" [gruvbox]="Gruvbox" [catppuccin]="Catppuccin"
+    [nord]="Nord" [rose-pine]="Rosé Pine" [dracula]="Dracula" [ayu]="Ayu" [eldritch]="Eldritch" [noctalia]="Noctalia"
+)
+DEFAULT_THEME=kanagawa
+
+notify() { if command -v notify-send >/dev/null; then notify-send -a dot "$@"; fi; }
+need()   { command -v "$1" >/dev/null 2>&1 || { notify "dot" "missing: $1"; echo "missing: $1" >&2; exit 1; }; }
+pick()   { need fuzzel; fuzzel --dmenu --prompt "$1 " --lines "${2:-12}" --width 40; }
+current_theme() { [[ -f $THEME_FILE ]] && cat "$THEME_FILE" || echo "$DEFAULT_THEME"; }
+
+# ---------------------------------------------------------------- theme
+cmd_theme() {
+    local name="${1:-}"
+    if [[ -z $name ]]; then
+        name=$(printf '%s\n' "${!PALETTE[@]}" | sort | pick "Theme" || true)
+        [[ -n $name ]] || exit 0
+    fi
+    [[ -n ${PALETTE[$name]:-} ]] || { echo "unknown theme: $name (have: ${!PALETTE[*]})" >&2; exit 1; }
+
+    echo "$name" >"$THEME_FILE"
+    noctalia msg color-scheme-set builtin "${PALETTE[$name]}" >/dev/null
+    noctalia msg templates-apply >/dev/null 2>&1 || true
+    cmd_wallpaper quiet || true
+    pkill -SIGUSR1 -x nvim 2>/dev/null || true      # nvim re-reads $THEME_FILE on SIGUSR1
+    notify "Theme" "$name"
+}
+
+cmd_theme_state() { current_theme; }
+
+# ---------------------------------------------------------------- wallpaper
+cmd_wallpaper() {
+    local file="${1:-}" dir
+    dir="$DOTFILES/wallpapers/$(current_theme)"
+    if [[ $file == quiet || -z $file ]]; then
+        [[ -d $dir ]] || { [[ $file == quiet ]] && return 0; echo "no wallpapers in $dir" >&2; exit 1; }
+        file=$(find "$dir" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | shuf -n1 || true)
+        [[ -n $file ]] || return 0
+    fi
+    noctalia msg wallpaper-set "$file" >/dev/null
+}
+
+# ---------------------------------------------------------------- screenshots / recording
+cmd_screenshot() {
+    local mode="${1:-annotate}"
+    case "$mode" in
+        region)   noctalia msg screenshot-region ;;
+        full)     noctalia msg screenshot-fullscreen all ;;
+        window)   noctalia msg screenshot-fullscreen pick ;;
+        annotate)
+            need grim; need slurp; need satty
+            local geom; geom=$(slurp -d) || exit 0
+            grim -g "$geom" - | satty --filename - --copy-command wl-copy \
+                --output-filename "$HOME/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png" --early-exit ;;
+        *) echo "usage: dot screenshot [region|annotate|full|window]" >&2; exit 1 ;;
+    esac
+}
+
+cmd_record() {
+    need wf-recorder; need slurp
+    if [[ -f $REC_PID ]] && kill -0 "$(cat "$REC_PID")" 2>/dev/null; then
+        kill -INT "$(cat "$REC_PID")"; rm -f "$REC_PID"
+        notify "Recording" "saved to ~/Videos/Recordings"
+        return
+    fi
+    local geom; geom=$(slurp -d) || exit 0
+    mkdir -p "$HOME/Videos/Recordings"
+    local out; out="$HOME/Videos/Recordings/$(date +%Y-%m-%d_%H-%M-%S).mp4"
+    wf-recorder -g "$geom" -f "$out" >/dev/null 2>&1 &
+    echo $! >"$REC_PID"
+    notify "Recording" "started — Super+Shift+R to stop"
+}
+
+# ---------------------------------------------------------------- packages
+cmd_install() {
+    need fuzzel
+    local q; q=$(pick "Install (search)" 1 </dev/null) || exit 0
+    [[ -n $q ]] || exit 0
+    local sel
+    sel=$( { pacman -Ssq "$q" 2>/dev/null; command -v paru >/dev/null && paru -Ssq --aur "$q" 2>/dev/null; } | sort -u | pick "Install" ) || exit 0
+    [[ -n $sel ]] || exit 0
+    local helper=paru; command -v paru >/dev/null || helper="sudo pacman"
+    ${TERMINAL:-ghostty} -e bash -c "$helper -S $sel; echo; read -rp 'done — press enter' _"
+}
+
+cmd_remove() {
+    local sel; sel=$(pacman -Qqe | pick "Remove") || exit 0
+    [[ -n $sel ]] || exit 0
+    ${TERMINAL:-ghostty} -e bash -c "sudo pacman -Rns $sel; echo; read -rp 'done — press enter' _"
+}
+
+cmd_update() {
+    ${TERMINAL:-ghostty} -e bash -c "$DOTFILES/bootstrap.sh update; echo; read -rp 'done — press enter' _"
+}
+
+# ---------------------------------------------------------------- misc
+cmd_keys() {
+    hyprctl binds -j | jq -r '.[] | "\(.modmask|tostring) \(.key) \t\(.dispatcher) \(.arg)"' \
+        | sed -e 's/^64 /Super+/;s/^65 /Super+Shift+/;s/^68 /Super+Ctrl+/;s/^72 /Super+Alt+/;s/^69 /Super+Ctrl+Shift+/;s/^73 /Super+Shift+Alt+/;s/^76 /Super+Ctrl+Alt+/;s/^0 //' \
+        | pick "Keys" 20 >/dev/null || true
+}
+
+cmd_power() {
+    local sel; sel=$(printf '%s\n' "Lock" "Suspend" "Logout" "Reboot" "Shutdown" | pick "Power" 5) || exit 0
+    case "$sel" in
+        Lock)     noctalia msg session lock ;;
+        Suspend)  noctalia msg session lock-and-suspend ;;
+        Logout)   noctalia msg session logout ;;
+        Reboot)   noctalia msg session reboot ;;
+        Shutdown) noctalia msg session shutdown ;;
+    esac
+}
+
+cmd_menu() {
+    local sel
+    sel=$(printf '%s\n' \
+        "  Theme" "  Wallpaper" "  Screenshot (annotate)" "  Screenshot (region)" "  Record screen" \
+        "  Install app" "  Remove app" "  Update dotfiles" "  Settings (Noctalia)" "  Keybindings" "⏻  Power" \
+        | pick "Menu" 11) || exit 0
+    case "$sel" in
+        *Theme)        cmd_theme ;;
+        *Wallpaper)    cmd_wallpaper ;;
+        *annotate*)    cmd_screenshot annotate ;;
+        *region*)      cmd_screenshot region ;;
+        *Record*)      cmd_record ;;
+        *Install*)     cmd_install ;;
+        *Remove*)      cmd_remove ;;
+        *Update*)      cmd_update ;;
+        *Settings*)    noctalia msg settings-open ;;
+        *Keybindings*) cmd_keys ;;
+        *Power)        cmd_power ;;
+    esac
+}
+
+case "${1:-menu}" in
+    menu)         cmd_menu ;;
+    theme)        cmd_theme "${2:-}" ;;
+    theme-state)  cmd_theme_state ;;
+    wallpaper)    cmd_wallpaper "${2:-}" ;;
+    screenshot)   cmd_screenshot "${2:-annotate}" ;;
+    record)       cmd_record ;;
+    install)      cmd_install ;;
+    remove)       cmd_remove ;;
+    update)       cmd_update ;;
+    keys)         cmd_keys ;;
+    power)        cmd_power ;;
+    *) sed -n '2,15p' "$0"; exit 1 ;;
+esac

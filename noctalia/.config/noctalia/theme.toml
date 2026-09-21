@@ -1,0 +1,12 @@
+# Extra colour templates (Noctalia merges every *.toml in this directory).
+# Builtin ones (ghostty, btop, gtk, qt) are enabled in config.toml.
+# Switch everything at once with: dot theme <name>   (Super+Ctrl+Shift+Space)
+
+[theme.templates.user.nvim_base16]
+input_path  = "~/.config/nvim/lua/noctalia-template.lua"
+output_path = "~/.config/nvim/lua/noctalia.lua"
+post_hook   = "pkill -SIGUSR1 -x nvim"
+
+[theme.templates.user.fuzzel]
+input_path  = "~/.config/noctalia/templates/fuzzel.ini"
+output_path = "~/.config/fuzzel/noctalia.ini"

@@ -1,0 +1,45 @@
+[user]
+	name = Martin Litre
+	# email and signingkey live in ~/.config/git/local (git-ignored)
+[include]
+	path = ~/.config/git/local
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[gpg]
+	format = openpgp
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+	excludesFile = ~/.config/git/ignore
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+	syntax-theme = Kanagawa
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+	followTags = true
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+	updateRefs = true
+[rerere]
+	enabled = true
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[merge]
+	conflictStyle = zdiff3
+[alias]
+	st = status -sb
+	lg = log --oneline --graph --decorate -20
+	fixup = commit --fixup
+	wip = commit -am wip --no-gpg-sign

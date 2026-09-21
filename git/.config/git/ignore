@@ -1,0 +1,17 @@
+# C++ / CMake
+build/
+build-*/
+cmake-build-*/
+compile_commands.json
+.cache/
+# Rust
+target/
+# Editors / tools
+.direnv/
+.envrc
+.idea/
+.vscode/
+*.swp
+.DS_Store
+# Claude Code local state
+.claude/settings.local.json

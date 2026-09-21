@@ -1,0 +1,3 @@
+# Copy to ~/.config/zsh/local.zsh (git-ignored). Machine- or work-specific only.
+# export PATH="$HOME/some/tool/bin:$PATH"
+# export SOME_WORK_VAR=...

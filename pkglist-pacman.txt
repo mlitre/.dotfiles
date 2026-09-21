@@ -1,0 +1,54 @@
+# Deploy + shell
+stow
+git
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+fzf
+zoxide
+eza
+bat
+ripgrep
+fd
+btop
+lazygit
+git-delta
+lolcat
+# Terminal + fonts
+ghostty
+ttf-jetbrains-mono-nerd
+wl-clipboard
+# Editor
+neovim
+lua-language-server
+stylua
+tree-sitter-cli
+# C++ / CMake
+clang
+cmake
+ninja
+gdb
+lldb
+# Rust
+rustup
+# GPG signing
+gnupg
+pinentry
+# Omarchy-inspired layer
+fuzzel
+grim
+slurp
+satty
+wf-recorder
+jq
+fastfetch
+ccache
+bitwarden
+obsidian
+spotify-launcher
+localsend
+docker
+docker-compose
+lazydocker
+mise
+papirus-icon-theme

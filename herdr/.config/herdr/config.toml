@@ -1,0 +1,30 @@
+# herdr — agent-aware terminal multiplexer (replaces tmux)
+# Reload: herdr server reload-config   Full defaults: herdr --default-config
+onboarding = false
+
+[theme]
+name = "terminal"   # follows Ghostty ANSI palette -> switches with `dot theme`
+
+[terminal]
+default_shell = "zsh"
+shell_mode = "auto"
+new_cwd = "follow"
+
+[worktrees]
+directory = "~/Projects/.worktrees"
+
+[keys]
+prefix = "ctrl+b"
+switch_tab = "prefix+1..9"
+switch_workspace = "prefix+shift+1..9"
+focus_agent = "prefix+alt+1..9"
+
+[[keys.command]]
+key = "prefix+g"
+type = "pane"
+command = "lazygit"
+
+[[keys.command]]
+key = "prefix+e"
+type = "pane"
+command = "nvim"
