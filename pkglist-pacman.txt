@@ -45,6 +45,7 @@ socat
 github-cli
 shellcheck
 tailscale
+incus
 fastfetch
 ccache
 bitwarden

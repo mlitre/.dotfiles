@@ -1,3 +1,5 @@
 # Optional, installed with paru if present
 # (spotify-launcher is in extra; use `spotify` here instead if you prefer the AUR build)
 timer
+google-cloud-cli
+ngrok
