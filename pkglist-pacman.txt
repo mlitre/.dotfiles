@@ -41,6 +41,7 @@ slurp
 satty
 wf-recorder
 jq
+socat
 fastfetch
 ccache
 bitwarden

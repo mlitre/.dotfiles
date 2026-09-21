@@ -1,0 +1,63 @@
+#!/bin/bash
+# Disable the laptop panel while an external display is connected, re-enable it
+# when the last external goes away.
+#
+# Also reacts to configreloaded: disabling a monitor is a runtime override, so
+# any `hyprctl reload` restores the panel from monitors.lua and would otherwise
+# leave it on while docked.
+#
+# Re-enabling goes through `hyprctl reload` rather than a hardcoded mode, so the
+# layout stays owned by monitors.lua and config/local.lua.
+set -uo pipefail
+
+LAPTOP="${HYPR_LAPTOP_OUTPUT:-eDP-1}"
+
+need() { command -v "$1" >/dev/null || { echo "missing $1" >&2; exit 1; }; }
+need hyprctl
+need jq
+need socat
+
+monitors_json() { hyprctl -j monitors all 2>/dev/null; }
+
+external_count() {
+    monitors_json | jq --arg l "$LAPTOP" '[.[] | select(.name != $l)] | length' 2>/dev/null
+}
+
+laptop_is_disabled() {
+    monitors_json | jq -r --arg l "$LAPTOP" \
+        '[.[] | select(.name == $l) | .disabled] | first // false' 2>/dev/null
+}
+
+apply() {
+    local n want cur
+    n=$(external_count) || return 0
+    [[ $n =~ ^[0-9]+$ ]] || return 0
+
+    if (( n > 0 )); then want=true; else want=false; fi
+    cur=$(laptop_is_disabled) || return 0
+
+    # Idempotent: without this, our own disable emits monitorremoved and our own
+    # reload emits configreloaded, and the handler would chase its own tail.
+    [[ $cur == "$want" ]] && return 0
+
+    if [[ $want == true ]]; then
+        # `hyprctl keyword` is refused under the Lua parser ("keyword can't work
+        # with non-legacy parsers. Use eval."), so go through hl directly.
+        hyprctl eval "hl.monitor({ output = \"$LAPTOP\", disabled = true })" >/dev/null
+    else
+        hyprctl reload >/dev/null
+    fi
+}
+
+SIG="${HYPRLAND_INSTANCE_SIGNATURE:-}"
+[[ -n $SIG ]] || { echo "HYPRLAND_INSTANCE_SIGNATURE unset; not inside a Hyprland session" >&2; exit 1; }
+SOCK="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr/${SIG}/.socket2.sock"
+[[ -S $SOCK ]] || { echo "no event socket at $SOCK" >&2; exit 1; }
+
+apply
+
+socat -U - "UNIX-CONNECT:$SOCK" | while IFS= read -r line; do
+    case "$line" in
+        monitoradded*|monitorremoved*|configreloaded*) apply ;;
+    esac
+done
