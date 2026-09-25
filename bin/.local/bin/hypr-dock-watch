@@ -52,6 +52,11 @@ apply() {
 SIG="${HYPRLAND_INSTANCE_SIGNATURE:-}"
 [[ -n $SIG ]] || { echo "HYPRLAND_INSTANCE_SIGNATURE unset; not inside a Hyprland session" >&2; exit 1; }
 SOCK="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr/${SIG}/.socket2.sock"
+# At session start the socket can appear slightly after autostart runs.
+for _ in $(seq 1 50); do
+    [[ -S $SOCK ]] && break
+    sleep 0.2
+done
 [[ -S $SOCK ]] || { echo "no event socket at $SOCK" >&2; exit 1; }
 
 apply
