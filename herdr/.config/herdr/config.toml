@@ -28,3 +28,8 @@ command = "lazygit"
 key = "prefix+e"
 type = "pane"
 command = "nvim"
+
+[ui.sound.agents]
+claude = "off"
+codex = "off"
+pi = "off"

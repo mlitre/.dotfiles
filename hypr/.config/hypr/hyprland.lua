@@ -18,3 +18,6 @@ require("config.workspaces")
 -- whole config. Load it optionally, same as config.local in variables.lua.
 local ok, noctalia = pcall(require, "noctalia")
 if ok then noctalia.apply_theme() end
+
+-- For Noctalia Color templates
+require("noctalia").apply_theme()
