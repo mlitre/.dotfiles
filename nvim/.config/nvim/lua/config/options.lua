@@ -16,3 +16,5 @@ opt.isfname:append("@-@")
 
 vim.g.lazyvim_picker = "telescope"
 vim.g.autoformat = false        -- <leader>cf formats on demand; clang-format rules vary per repo
+
+require("config.remote_clipboard").setup()
