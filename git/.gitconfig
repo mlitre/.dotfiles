@@ -4,9 +4,11 @@
 [include]
 	path = ~/.config/git/local
 [commit]
+	verbose = true
 	gpgsign = true
 [tag]
 	gpgsign = true
+	sort = -version:refname
 [gpg]
 	format = openpgp
 [init]
@@ -33,12 +35,21 @@
 	updateRefs = true
 [rerere]
 	enabled = true
+	autoupdate = true
 [diff]
 	algorithm = histogram
 	colorMoved = default
+	mnemonicPrefix = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
 [merge]
 	conflictStyle = zdiff3
 [alias]
+	co = checkout
+	br = branch
+	ci = commit
 	st = status -sb
 	lg = log --oneline --graph --decorate -20
 	fixup = commit --fixup
