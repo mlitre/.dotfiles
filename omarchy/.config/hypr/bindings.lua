@@ -9,11 +9,20 @@ hl.unbind("SUPER + L")
 o.bind("SUPER + L", "Lock system", "omarchy-system-lock")
 o.bind("SUPER + SHIFT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 
--- Chromium profiles. The default browser is chromium-work.desktop, so Omarchy's
--- Super+Shift+B / Return / Alt+B already open Work.
+-- Chromium profiles. Bound to the launchers directly so the keys don't depend on
+-- the default browser setting.
 local WORK, PERSONAL = "--profile-directory=Default", "--profile-directory=Personal"
-o.bind("SUPER + SHIFT + CTRL + B", "Browser (personal)",
-  o.launch(os.getenv("HOME") .. "/.local/lib/chromium-profiles/personal/chromium"))
+local profiles = os.getenv("HOME") .. "/.local/lib/chromium-profiles/"
+local work_browser = o.launch(profiles .. "work/chromium")
+local personal_browser = o.launch(profiles .. "personal/chromium")
+for _, keys in ipairs({ "SUPER + SHIFT + B", "SUPER + SHIFT + RETURN", "SUPER + SHIFT + ALT + B" }) do
+  hl.unbind(keys)
+end
+o.bind("SUPER + SHIFT + B", "Browser (work)", work_browser)
+o.bind("SUPER + SHIFT + RETURN", "Browser (work)", work_browser)
+o.bind("SUPER + SHIFT + ALT + B", "Browser (work, private)", work_browser .. " --incognito")
+o.bind("SUPER + SHIFT + CTRL + B", "Browser (personal)", personal_browser)
+o.bind("SUPER + SHIFT + CTRL + RETURN", "Browser (personal)", personal_browser)
 
 local function webapp(keys, description, url, profile, focus)
   hl.unbind(keys)

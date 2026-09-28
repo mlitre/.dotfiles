@@ -122,6 +122,10 @@ Omarchy's generated webapps in `~/.local/share/applications` (YouTube, WhatsApp,
 Maps/Photos/Messages/Contacts, X) get `--profile-directory=Personal` appended to `Exec=` by
 hand; reinstalling a webapp drops it.
 
+Both launchers pass `--no-default-browser-check`, because Chromium's "set as default" prompt
+registers `chromium.desktop` and undoes the Work default. If links start opening in the wrong
+profile, rerun the commands above.
+
 Extensions, installed per profile from the Chrome Web Store:
 
 | Both | Personal only |
@@ -140,7 +144,7 @@ See everything with `omarchy menu keybindings --print` (or `Super+K`).
 | `Super+L` | lock (was Omarchy's workspace layout toggle) |
 | `Super+Shift+L` | toggle workspace layout |
 | `Super+Shift+B` / `Return` | Chromium, Work profile (`Alt` for incognito) |
-| `Super+Shift+Ctrl+B` | Chromium, Personal profile |
+| `Super+Shift+Ctrl+B` / `Return` | Chromium, Personal profile |
 | `Super+Shift+C` / `E` / `Alt+E` | Google Calendar, Gmail, new Gmail (Work) |
 | `Super+Shift+Y`, `Alt+G`, `Ctrl+G`, `P`, `S`, `X` | YouTube, WhatsApp, Messages, Photos, Maps, X (Personal) |
 
