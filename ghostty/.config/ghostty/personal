@@ -1,13 +1,10 @@
 # Ghostty — Martin's config (transparent, JetBrainsMono NF)
-# Colours follow the Omarchy theme switcher.
-
-config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+# Loaded after the Omarchy theme, so these win over its values.
 
 font-family = JetBrainsMono Nerd Font
-font-size = 12
 font-feature = -calt
 
-background-opacity = 0.85
+background-opacity = 0.75
 background-blur = true
 unfocused-split-opacity = 0.8
 

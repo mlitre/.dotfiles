@@ -1,0 +1,6 @@
+# Entry point. Omarchy's text-size tool rewrites font-size here in place,
+# so this file is copied, not stowed.
+font-size = 9
+
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+config-file = personal
