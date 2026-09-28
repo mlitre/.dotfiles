@@ -21,8 +21,8 @@ alias cb='cargo build' cr='cargo run' ct='cargo test' cc='cargo clippy --all-tar
 
 # dotfiles
 alias dots='cd ~/.dotfiles'
-alias restow='~/.dotfiles/bootstrap.sh stow'
+alias restow='stow -d ~/.dotfiles -t ~ -R zsh git nvim ghostty herdr omarchy'
 
-# docker / dotfiles menu
+# docker / omarchy
 alias ld='lazydocker'
-alias theme='dot theme'
+alias theme='omarchy theme set'
