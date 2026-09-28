@@ -1,0 +1,22 @@
+#!/bin/bash
+# CPU (since the previous run) and memory use, for an Omarchy bar command module.
+
+state="${XDG_RUNTIME_DIR:-/tmp}/omarchy-bar-cpu"
+
+while IFS=$'\t' read -r key a b; do
+  case $key in
+    cpu) idle=$a total=$b ;;
+    memory) mem=$a ;;
+    load) load=$a ;;
+  esac
+done < <(omarchy-system-stats --bar-widget)
+
+read -r prev_idle prev_total 2>/dev/null < "$state" || true
+echo "$idle $total" > "$state"
+
+cpu=0
+if [[ -n $prev_total ]] && (( total > prev_total )); then
+  cpu=$(( 100 * ((total - prev_total) - (idle - prev_idle)) / (total - prev_total) ))
+fi
+
+printf '{"text":"󰍛 %d%%  󰘚 %.0f%%","tooltip":"CPU %d%%  ·  Memory %.0f%%  ·  Load %s"}\n' "$cpu" "$mem" "$cpu" "$mem" "$load"
