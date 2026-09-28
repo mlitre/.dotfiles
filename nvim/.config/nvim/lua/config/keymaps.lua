@@ -3,7 +3,7 @@
 --   <leader>s  (search)        -> substitute word is <leader>rw
 --   <leader>x  (diagnostics)   -> chmod +x is <leader>cx
 --   <leader>f  (find/file)     -> format is LazyVim's <leader>cf
---   <leader>pv (netrw)         -> LazyVim explorer <leader>e / <leader>fe
+--   <leader><leader> (find)    -> source current file is <leader>X
 --   <C-h/t/n/s> harpoon slots  -> harpoon2 extra: <leader>H add, <leader>h menu, <leader>1..5
 local map = vim.keymap.set
 
@@ -37,3 +37,4 @@ map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 map("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
 map("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "chmod +x current file" })
 map("n", "<leader>X", function() vim.cmd("so") end, { desc = "Source current file" })
+map("n", "<leader>pv", vim.cmd.Ex, { desc = "Explore file's directory (netrw)" })
