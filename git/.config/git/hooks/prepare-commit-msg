@@ -1,0 +1,26 @@
+#!/bin/bash
+# Append Signed-off-by trailer using the git-config identity, unless already present.
+# addIfDifferent, not doNothing: doNothing keys off the token alone, so a
+# co-author's Signed-off-by suppressed our own. Still idempotent, since an
+# identical (token, value) pair counts as present.
+# Skips merge and squash commits (those inherit existing trailers).
+
+MSG_FILE="$1"
+COMMIT_SOURCE="$2"
+
+case "$COMMIT_SOURCE" in
+  merge|squash) exit 0 ;;
+esac
+
+NAME=$(git config --get user.name)
+EMAIL=$(git config --get user.email)
+
+if [ -z "$NAME" ] || [ -z "$EMAIL" ]; then
+  exit 0
+fi
+
+git interpret-trailers \
+  --in-place \
+  --if-exists addIfDifferent \
+  --trailer "Signed-off-by: $NAME <$EMAIL>" \
+  "$MSG_FILE"

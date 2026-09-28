@@ -49,3 +49,6 @@
 [credential "https://gist.github.com"]
 	helper = 
 	helper = !/usr/bin/gh auth git-credential
+[hook "signoff"]
+	event = prepare-commit-msg
+	command = ~/.config/git/hooks/prepare-commit-msg
