@@ -2,7 +2,7 @@
 
 Martin's dotfiles for [Omarchy](https://omarchy.org/) (Arch + Hyprland), deployed with GNU Stow.
 Omarchy owns the desktop; this repo layers personal overrides on top of it and keeps the portable
-tools: zsh/oh-my-zsh, git, LazyVim (C++/CMake, Rust), Ghostty and herdr. Colors follow the Omarchy
+tools: zsh/oh-my-zsh with powerlevel10k, git, LazyVim (C++/CMake, Rust), Ghostty and herdr. Colors follow the Omarchy
 theme switcher everywhere.
 
 ## Fresh machine
@@ -15,6 +15,7 @@ cd ~/.dotfiles
 sudo pacman -S --needed stow zsh zsh-autosuggestions zsh-syntax-highlighting
 omarchy-install-terminal ghostty
 git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+git clone --depth 1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 # per-machine files (git-ignored), then edit them
 cp git/.config/git/local.example git/.config/git/local          # email, GPG signing key
@@ -42,7 +43,7 @@ so stow links files, never whole directories, and Omarchy can keep its own files
 | `omarchy/.config/omarchy/bar/scripts/cpu` | CPU and memory readout for the bar |
 | `ghostty/.config/ghostty/personal` | font, keys, opacity; loaded after the Omarchy theme so it wins |
 | `nvim/.config/nvim/` | LazyVim. `lua/plugins/theme.lua` links to Omarchy's current theme and hot-reloads on theme switch |
-| `zsh/` | `.zshrc`, `.config/zsh/{aliases,functions}.zsh` (+ `local.zsh`, git-ignored) |
+| `zsh/` | `.zshrc`, `.p10k.zsh` (prompt layout), `.config/zsh/{aliases,functions}.zsh` (+ `local.zsh`, git-ignored) |
 | `git/` | `.gitconfig`, global ignore, the sign-off hook (+ `local`, git-ignored: email, signing key) |
 | `herdr/` | herdr config |
 | `legacy/` | the previous CachyOS + Noctalia desktop (hypr, noctalia, fuzzel, uwsm, `dot`, bootstrap). Not stowed; kept for reference |
@@ -61,6 +62,7 @@ replaced with a plain file and silently stops tracking the repo, so these stay l
 | `~/.config/omarchy/shell.toml` | Omarchy's text-size tool | edited live, see below |
 | `~/.config/hypr/monitors.lua` | Omarchy's monitor scaling | left to Omarchy |
 | `~/.config/btop/btop.conf` | btop, on every exit | edited live, see below |
+| `~/.p10k.zsh` | `p10k configure` | stowed; after reconfiguring, check it is still a link (`restow` if not) |
 
 ## Live Omarchy settings
 
@@ -78,6 +80,20 @@ Reapply these by hand on a new machine or after `omarchy refresh shell`:
   ```toml
   [bar]
   size-horizontal = 32
+  ```
+
+- **Daily snapshots of `/home`, 14 kept**:
+
+  ```sh
+  sudo snapper -c home create-config /home
+  sudo snapper -c home set-config TIMELINE_CREATE=yes TIMELINE_CLEANUP=yes \
+    TIMELINE_LIMIT_HOURLY=0 TIMELINE_LIMIT_DAILY=14 TIMELINE_LIMIT_WEEKLY=0 \
+    TIMELINE_LIMIT_MONTHLY=0 TIMELINE_LIMIT_QUARTERLY=0 TIMELINE_LIMIT_YEARLY=0 \
+    ALLOW_USERS="$USER" SYNC_ACL=yes
+  sudo mkdir -p /etc/systemd/system/snapper-timeline.timer.d
+  printf '[Timer]\nOnCalendar=\nOnCalendar=daily\nPersistent=true\n' |
+    sudo tee /etc/systemd/system/snapper-timeline.timer.d/daily.conf
+  sudo systemctl daemon-reload && sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
   ```
 
 - **btop**: in `~/.config/btop/btop.conf`, `theme_background = false`, `update_ms = 1500`,
