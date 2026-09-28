@@ -40,7 +40,7 @@ so stow links files, never whole directories, and Omarchy can keep its own files
 | Package | What |
 | --- | --- |
 | `omarchy/.config/hypr/` | `hyprland.lua` (Omarchy's entry point plus `require("hypr.windows")`), and overrides loaded after Omarchy's defaults: `input.lua`, `windows.lua`, `bindings.lua`, `looknfeel.lua` |
-| `omarchy/.config/omarchy/bar/scripts/cpu` | CPU and memory readout for the bar |
+| `omarchy/.config/omarchy/bar/scripts/cpu` | CPU, temperature and memory readout for the bar |
 | `omarchy/.local/lib/chromium-profiles/`, `omarchy/.local/share/applications/chromium-*.desktop` | Chromium Work and Personal launchers, see [Browser](#browser) |
 | `ghostty/.config/ghostty/personal` | font, keys, opacity; loaded after the Omarchy theme so it wins |
 | `nvim/.config/nvim/` | LazyVim. `lua/plugins/theme.lua` links to Omarchy's current theme and hot-reloads on theme switch |

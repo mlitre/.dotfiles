@@ -1,5 +1,5 @@
 #!/bin/bash
-# CPU (since the previous run) and memory use, for an Omarchy bar command module.
+# CPU (since the previous run), CPU temperature and memory use, for an Omarchy bar command module.
 
 state="${XDG_RUNTIME_DIR:-/tmp}/omarchy-bar-cpu"
 
@@ -19,4 +19,17 @@ if [[ -n $prev_total ]] && (( total > prev_total )); then
   cpu=$(( 100 * ((total - prev_total) - (idle - prev_idle)) / (total - prev_total) ))
 fi
 
-printf '{"text":"󰍛 %d%%  󰘚 %.0f%%","tooltip":"CPU %d%%  ·  Memory %.0f%%  ·  Load %s"}\n' "$cpu" "$mem" "$cpu" "$mem" "$load"
+# hwmon numbering changes across boots, so find the CPU sensor by driver name.
+temp="" temp_tip=""
+for h in /sys/class/hwmon/hwmon*; do
+  case $(<"$h/name") in
+    k10temp | coretemp)
+      temp=" $(( $(<"$h/temp1_input") / 1000 ))°C"
+      temp_tip="  ·  Temp${temp}"
+      break
+      ;;
+  esac
+done
+
+printf '{"text":"󰍛 %d%%%s  󰘚 %.0f%%","tooltip":"CPU %d%%%s  ·  Memory %.0f%%  ·  Load %s"}\n' \
+  "$cpu" "$temp" "$mem" "$cpu" "$temp_tip" "$mem" "$load"
