@@ -20,7 +20,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 # Environment
 export EDITOR=nvim VISUAL=nvim
-export TERMINAL=ghostty BROWSER=firefox
+export TERMINAL=ghostty BROWSER=$HOME/.local/lib/chromium-profiles/work/chromium
 export GPG_TTY=$TTY
 typeset -U path
 path=("$HOME/.local/bin" "$HOME/bin" "$HOME/.cargo/bin" $path)

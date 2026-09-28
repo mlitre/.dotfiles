@@ -1,0 +1,3 @@
+#!/bin/bash
+# Named chromium so omarchy-launch-browser's focus match finds the window.
+exec /usr/bin/chromium --profile-directory=Personal "$@"

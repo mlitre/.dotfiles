@@ -1,0 +1,18 @@
+[Desktop Entry]
+Version=1.0
+Name=Chromium (Work)
+GenericName=Web Browser
+Comment=Chromium, Work profile
+Exec=/home/mlitre/.local/lib/chromium-profiles/work/chromium %U
+Terminal=false
+Icon=chromium
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupWMClass=chromium
+StartupNotify=true
+Actions=new-private-window;
+
+[Desktop Action new-private-window]
+Name=New Incognito Window
+Exec=/home/mlitre/.local/lib/chromium-profiles/work/chromium --incognito

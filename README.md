@@ -41,6 +41,7 @@ so stow links files, never whole directories, and Omarchy can keep its own files
 | --- | --- |
 | `omarchy/.config/hypr/` | `hyprland.lua` (Omarchy's entry point plus `require("hypr.windows")`), and overrides loaded after Omarchy's defaults: `input.lua`, `windows.lua`, `bindings.lua`, `looknfeel.lua` |
 | `omarchy/.config/omarchy/bar/scripts/cpu` | CPU and memory readout for the bar |
+| `omarchy/.local/lib/chromium-profiles/`, `omarchy/.local/share/applications/chromium-*.desktop` | Chromium Work and Personal launchers, see [Browser](#browser) |
 | `ghostty/.config/ghostty/personal` | font, keys, opacity; loaded after the Omarchy theme so it wins |
 | `nvim/.config/nvim/` | LazyVim. `lua/plugins/theme.lua` links to Omarchy's current theme and hot-reloads on theme switch |
 | `zsh/` | `.zshrc`, `.p10k.zsh` (prompt layout), `.config/zsh/{aliases,functions}.zsh` (+ `local.zsh`, git-ignored) |
@@ -62,6 +63,7 @@ replaced with a plain file and silently stops tracking the repo, so these stay l
 | `~/.config/omarchy/shell.toml` | Omarchy's text-size tool | edited live, see below |
 | `~/.config/hypr/monitors.lua` | Omarchy's monitor scaling | left to Omarchy |
 | `~/.config/btop/btop.conf` | btop, on every exit | edited live, see below |
+| `~/.config/mimeapps.list` | `xdg-settings`, `xdg-mime` | set by command, see [Browser](#browser) |
 | `~/.p10k.zsh` | `p10k configure` | stowed; after reconfiguring, check it is still a link (`restow` if not) |
 
 ## Live Omarchy settings
@@ -99,6 +101,35 @@ Reapply these by hand on a new machine or after `omarchy refresh shell`:
 - **btop**: in `~/.config/btop/btop.conf`, `theme_background = false`, `update_ms = 1500`,
   `proc_per_core = true`.
 
+## Browser
+
+Chromium with two local profiles, no Google sign-in: **Work** (`Default`) and **Personal**
+(`Personal`). They replace Firefox containers. Links from other apps, `$BROWSER` and
+`xdg-open` always open in Work.
+
+Each profile has a launcher at `~/.local/lib/chromium-profiles/<profile>/chromium`. It is
+named `chromium` because `omarchy-launch-browser` keeps only the first word of the default
+browser's `Exec=` and focuses windows by that name. Set the default once:
+
+```sh
+env -u BROWSER xdg-settings set default-web-browser chromium-work.desktop
+for m in text/html application/xhtml+xml x-scheme-handler/http x-scheme-handler/https; do
+  xdg-mime default chromium-work.desktop "$m"
+done
+```
+
+Omarchy's generated webapps in `~/.local/share/applications` (YouTube, WhatsApp, Google
+Maps/Photos/Messages/Contacts, X) get `--profile-directory=Personal` appended to `Exec=` by
+hand; reinstalling a webapp drops it.
+
+Extensions, installed per profile from the Chrome Web Store:
+
+| Both | Personal only |
+| --- | --- |
+| uBlock Origin Lite, Privacy Badger, Bitwarden | YouTube NonStop, The Camelizer, LeechBlock NG |
+
+Omarchy's `chromium-flags.conf` force-loads Copy URL, yt-dlp and WhatsApp Slim into both.
+
 ## Keys on top of Omarchy's
 
 See everything with `omarchy menu keybindings --print` (or `Super+K`).
@@ -108,6 +139,10 @@ See everything with `omarchy menu keybindings --print` (or `Super+K`).
 | `Super+Q` | close window (Omarchy's `Super+W` still works) |
 | `Super+L` | lock (was Omarchy's workspace layout toggle) |
 | `Super+Shift+L` | toggle workspace layout |
+| `Super+Shift+B` / `Return` | Chromium, Work profile (`Alt` for incognito) |
+| `Super+Shift+Ctrl+B` | Chromium, Personal profile |
+| `Super+Shift+C` / `E` / `Alt+E` | Google Calendar, Gmail, new Gmail (Work) |
+| `Super+Shift+Y`, `Alt+G`, `Ctrl+G`, `P`, `S`, `X` | YouTube, WhatsApp, Messages, Photos, Maps, X (Personal) |
 
 ## Daily commands
 
