@@ -1,8 +1,8 @@
-# ~/.zshrc — oh-my-zsh, gentoo theme, kept deliberately small.
+# ~/.zshrc: oh-my-zsh with powerlevel10k, kept deliberately small.
 # Machine/work-specific lines go in ~/.config/zsh/local.zsh (git-ignored).
 
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="gentoo"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 DISABLE_AUTO_UPDATE="true"          # pacman/bootstrap owns updates
 zstyle ':omz:update' mode disabled
 
@@ -41,3 +41,6 @@ done
 if [[ -o interactive && $SHLVL -le 2 && -z $NVIM && -z $DOT_NO_FETCH ]] && command -v fastfetch >/dev/null; then
   fastfetch
 fi
+
+# Prompt layout; regenerate with `p10k configure`.
+[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
