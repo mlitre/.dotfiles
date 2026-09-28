@@ -17,7 +17,7 @@ alias lg='lazygit'
 # CMake / Rust shortcuts
 alias cmb='cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug && cmake --build build'
 alias ccc='ln -sf build/compile_commands.json .'
-alias cb='cargo build' cr='cargo run' ct='cargo test' cc='cargo clippy --all-targets'
+alias cb='cargo build' cr='cargo run' ct='cargo test' ccl='cargo clippy --all-targets'
 
 # dotfiles
 alias dots='cd ~/.dotfiles'
