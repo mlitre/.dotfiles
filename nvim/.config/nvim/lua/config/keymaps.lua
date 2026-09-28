@@ -36,4 +36,4 @@ map("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 
 map("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
 map("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "chmod +x current file" })
-map("n", "<leader><leader>", function() vim.cmd("so") end, { desc = "Source current file" })
+map("n", "<leader>X", function() vim.cmd("so") end, { desc = "Source current file" })
