@@ -1,71 +1,114 @@
 # .dotfiles
 
-Martin's dotfiles for **CachyOS (Hyprland + Noctalia edition)**, deployed with GNU Stow.
-Ghostty · herdr · zsh/oh-my-zsh · LazyVim (C++/CMake, Rust) · Kanagawa by default, with Omarchy-style
-whole-desktop theme switching through Noctalia templates (`dot theme`).
+Martin's dotfiles for [Omarchy](https://omarchy.org/) (Arch + Hyprland), deployed with GNU Stow.
+Omarchy owns the desktop; this repo layers personal overrides on top of it and keeps the portable
+tools: zsh/oh-my-zsh, git, LazyVim (C++/CMake, Rust), Ghostty and herdr. Colors follow the Omarchy
+theme switcher everywhere.
 
 ## Fresh machine
 
+Install Omarchy first, then:
+
 ```sh
-git clone https://github.com/mlitre/.dotfiles.git ~/.dotfiles
+git clone git@github.com:mlitre/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-./bootstrap.sh -n install   # dry run, read it
-./bootstrap.sh install      # packages, stow, oh-my-zsh, herdr, nvim plugins
+sudo pacman -S --needed stow zsh zsh-autosuggestions zsh-syntax-highlighting
+omarchy-install-terminal ghostty
+git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+
+# per-machine files (git-ignored), then edit them
+cp git/.config/git/local.example git/.config/git/local          # email, GPG signing key
+cp zsh/.config/zsh/local.zsh.example zsh/.config/zsh/local.zsh
+cp ghostty/.config/ghostty/config.example ~/.config/ghostty/config
+
+# Omarchy ships its own versions of these; move them aside before the first stow
+mv ~/.config/nvim ~/.config/nvim.omarchy
+for f in hyprland input bindings looknfeel; do mv ~/.config/hypr/$f.lua ~/.config/hypr/$f.lua.omarchy; done
+
+stow ghostty herdr zsh git nvim omarchy
+sudo chsh -s /usr/bin/zsh "$USER"
 ```
 
-Then follow [docs/first-boot.md](docs/first-boot.md) (monitor names, git identity, Noctalia colour scheme).
+Then reapply the [live Omarchy settings](#live-omarchy-settings) below.
 
 ## Layout
 
-Each top-level directory is a stow package that mirrors `$HOME`:
+Each top-level directory is a stow package that mirrors `$HOME`. `.stowrc` sets `--no-folding`,
+so stow links files, never whole directories, and Omarchy can keep its own files beside ours.
 
-```
-bin/.local/bin/dot                          # Super+Alt+Space menu, `dot theme`, screenshots, recording, install, update
-ghostty/.config/ghostty/config              # colours come from Noctalia's generated theme
-btop/  fuzzel/  fastfetch/                  # themed by Noctalia templates
-btop/.config/btop/btop.conf.example         # btop rewrites its own config, so the
-                                            # real file is seeded and git-ignored
-noctalia/.config/noctalia/theme.toml        # our extra templates (nvim base16, fuzzel)
-wallpapers/<theme>/                         # not stowed; `dot theme` picks from here
-migrations/NNNN-*.sh                        # run once each by `bootstrap.sh update`
-herdr/.config/herdr/config.toml
-zsh/.zshrc  zsh/.config/zsh/{aliases,functions}.zsh  (+ local.zsh, git-ignored)
-git/.gitconfig  git/.config/git/ignore  (+ local, git-ignored: email, signing key)
-hypr/.config/hypr/hyprland.lua  hypr/.config/hypr/config/*.lua  (+ local.lua, git-ignored: monitors)
-uwsm/.config/uwsm/env
-noctalia/.config/noctalia/config.toml      # live settings.json is NOT tracked
-nvim/.config/nvim/                          # LazyVim; lazy-lock.json is tracked
-```
+| Package | What |
+| --- | --- |
+| `omarchy/.config/hypr/` | `hyprland.lua` (Omarchy's entry point plus `require("hypr.windows")`), and overrides loaded after Omarchy's defaults: `input.lua`, `windows.lua`, `bindings.lua`, `looknfeel.lua` |
+| `omarchy/.config/omarchy/bar/scripts/cpu` | CPU and memory readout for the bar |
+| `ghostty/.config/ghostty/personal` | font, keys, opacity; loaded after the Omarchy theme so it wins |
+| `nvim/.config/nvim/` | LazyVim. `lua/plugins/theme.lua` links to Omarchy's current theme and hot-reloads on theme switch |
+| `zsh/` | `.zshrc`, `.config/zsh/{aliases,functions}.zsh` (+ `local.zsh`, git-ignored) |
+| `git/` | `.gitconfig`, global ignore, the sign-off hook (+ `local`, git-ignored: email, signing key) |
+| `herdr/` | herdr config |
+| `legacy/` | the previous CachyOS + Noctalia desktop (hypr, noctalia, fuzzel, uwsm, `dot`, bootstrap). Not stowed; kept for reference |
 
-Packages that ship a `*.example` also carry a `.stow-local-ignore` so the example itself is never linked; the bootstrap copies it to the real (git-ignored) file on first run.
+Packages that ship a `*.example` also carry a `.stow-local-ignore`, so the example is never linked.
 
-`hypr/`, `uwsm/` and `noctalia/` start as copies of the edition's `/etc/skel`; `./bootstrap.sh diff-skel` shows every intentional change so upstream updates stay easy to merge.
+## Not stowed, on purpose
+
+Some files are rewritten in place by the tool that owns them. A stowed symlink there gets
+replaced with a plain file and silently stops tracking the repo, so these stay live files:
+
+| File | Rewritten by | How it's handled |
+| --- | --- | --- |
+| `~/.config/ghostty/config` | Omarchy's text-size tool (`sed -i` on `font-size`) | copied from `config.example`; holds only `font-size` and includes the theme, then `personal` |
+| `~/.config/omarchy/shell.json` | bar gestures, `omarchy bar ...` | edited live, see below |
+| `~/.config/omarchy/shell.toml` | Omarchy's text-size tool | edited live, see below |
+| `~/.config/hypr/monitors.lua` | Omarchy's monitor scaling | left to Omarchy |
+| `~/.config/btop/btop.conf` | btop, on every exit | edited live, see below |
+
+## Live Omarchy settings
+
+Reapply these by hand on a new machine or after `omarchy refresh shell`:
+
+- **CPU and memory in the bar**: in `~/.config/omarchy/shell.json`, add after
+  `omarchy.workspaces` in `bar.layout.left`:
+
+  ```json
+  { "id": "cpu", "type": "command", "exec": "~/.config/omarchy/bar/scripts/cpu", "interval": 3, "tooltip": "CPU and memory", "onClick": "omarchy-launch-or-focus-tui btop" }
+  ```
+
+- **Taller bar**: in `~/.config/omarchy/shell.toml`:
+
+  ```toml
+  [bar]
+  size-horizontal = 32
+  ```
+
+- **btop**: in `~/.config/btop/btop.conf`, `theme_background = false`, `update_ms = 1500`,
+  `proc_per_core = true`.
+
+## Keys on top of Omarchy's
+
+See everything with `omarchy menu keybindings --print` (or `Super+K`).
+
+| Key | Action |
+| --- | --- |
+| `Super+Q` | close window (Omarchy's `Super+W` still works) |
+| `Super+L` | lock (was Omarchy's workspace layout toggle) |
+| `Super+Shift+L` | toggle workspace layout |
 
 ## Daily commands
 
 | Task | Command |
 | --- | --- |
-| Re-link after `git pull` | `./bootstrap.sh stow` (or `restow` alias) |
-| Add a package | `mkdir -p foo/.config/foo && mv ~/.config/foo/config foo/.config/foo/ && stow foo` |
-| Remove everything | `./bootstrap.sh unstow` (restores `*.pre-stow` originals) |
-| Update after `git pull` (with migrations) | `./bootstrap.sh update` or `dot update` |
-| Switch theme everywhere | `dot theme kanagawa` / `Super+Ctrl+Shift+Space` |
-| System menu | `Super+Alt+Space` |
-| Health check | `./bootstrap.sh doctor` |
-| Keep Noctalia UI choices | `./bootstrap.sh snapshot-noctalia` and commit `docs/noctalia-settings.snapshot.json` |
+| Re-link after `git pull` | `restow` |
+| Switch theme everywhere | `theme <name>` (`omarchy theme set`) or `Super+Ctrl+Shift+Space` |
+| Check Hyprland config | `hyprctl reload && hyprctl configerrors` |
+| Reload terminals | `omarchy restart terminal` |
 
-## Why things are the way they are
+## Git
 
-See [docs/decisions.md](docs/decisions.md).
+Commits are GPG-signed (key in `git/.config/git/local`) and signed off by
+`git/.config/git/hooks/prepare-commit-msg`. The hook is registered as a config-based hook
+(`[hook "signoff"]` in `.gitconfig`), so it runs alongside each repo's own hooks instead of
+replacing them the way `core.hooksPath` would.
 
-## Keys added on top of the CachyOS defaults
-
-| Key | Action |
-| --- | --- |
-| `Super+Alt+Space` | `dot menu` (theme, wallpaper, screenshot, record, install, update, power) |
-| `Super+Ctrl+Shift+Space` | theme picker |
-| `Super+Shift+Space` | toggle floating (was `Super+Alt+Space`) |
-| `Super+Print` | region screenshot → satty annotate → clipboard |
-| `Super+Shift+Print` | full screenshot |
-| `Super+Shift+R` | start/stop region recording |
-| `Super+O` / `Super+Shift+B` | Obsidian / Bitwarden |
+Don't rebase or check out old commits inside `~/.dotfiles`: it is the live source for every
+stowed file, so an in-place history walk leaves dangling links under `~/.config` while it runs.
+Rewrite history in a separate worktree instead.
