@@ -26,3 +26,15 @@ alias restow='stow -d ~/.dotfiles -t ~ -R zsh git nvim ghostty herdr omarchy'
 # docker / omarchy
 alias ld='lazydocker'
 alias theme='omarchy theme set'
+
+# everest MQTT broker: eclipse-mosquitto in podman, using the repo's mosquitto.conf
+# (listener 1883 + websockets 9001, allow_anonymous). Replaces any existing container.
+EVEREST_MOSQUITTO_CONF="$HOME/Projects/everest-workspace/everest/applications/containers/mosquitto/mosquitto.conf"
+mqtt-up() {
+  podman rm -f mqtt >/dev/null 2>&1
+  podman run -d --name mqtt -p 1883:1883 -p 9001:9001 \
+    -v "$EVEREST_MOSQUITTO_CONF:/mosquitto/config/mosquitto.conf:ro" \
+    docker.io/library/eclipse-mosquitto:2.0.18
+}
+alias mqtt-down='podman rm -f mqtt'
+alias mqtt-log='podman logs -f mqtt'
