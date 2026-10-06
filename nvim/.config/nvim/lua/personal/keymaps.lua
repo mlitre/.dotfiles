@@ -1,4 +1,5 @@
--- Personal keymaps ported from the old remap.lua. LazyVim's own maps stay.
+-- Personal keymaps, required from Omarchy's lua/config/keymaps.lua by the line
+-- install.sh keeps there. LazyVim's own maps stay.
 -- Moved because LazyVim already uses the prefix:
 --   <leader>s  (search)        -> substitute word is <leader>rw
 --   <leader>x  (diagnostics)   -> chmod +x is <leader>cx

@@ -1,4 +1,5 @@
--- Options carried over from the old set.lua where they differ from LazyVim.
+-- Personal options, required from the end of Omarchy's lua/config/options.lua
+-- by the line install.sh keeps there.
 local opt = vim.opt
 
 opt.guicursor = ""              -- fat cursor everywhere
@@ -12,9 +13,7 @@ opt.colorcolumn = "80"
 opt.hlsearch = false
 opt.swapfile = false
 opt.isfname:append("@-@")
--- undofile/relativenumber/termguicolors/signcolumn/updatetime already on in LazyVim
+opt.relativenumber = true       -- Omarchy's options.lua turns it off
 
 vim.g.lazyvim_picker = "telescope"
 vim.g.autoformat = false        -- <leader>cf formats on demand; clang-format rules vary per repo
-
-require("config.remote_clipboard").setup()
