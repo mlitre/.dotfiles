@@ -22,7 +22,7 @@
 [delta]
 	navigate = true
 	line-numbers = true
-	syntax-theme = Kanagawa
+	syntax-theme = ansi
 [pull]
 	rebase = true
 [push]
