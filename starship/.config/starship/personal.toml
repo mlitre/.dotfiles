@@ -1,0 +1,105 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# The old p10k "lean" layout in starship. Read via STARSHIP_CONFIG (bash/init.bash);
+# Omarchy's ~/.config/starship.toml stays stock beside it. ANSI color names only,
+# so the Omarchy theme recolors it. Bash has no right prompt, so the right side
+# sits on the first line after $fill, where p10k drew it too.
+
+add_newline = true
+command_timeout = 200
+format = """
+$os$directory$git_branch$git_status$git_state\
+$fill\
+$status$cmd_duration$jobs$python$rust$nodejs$username$hostname$time
+$character"""
+
+[fill]
+symbol = " "
+style = ""
+
+[os]
+disabled = false
+format = "[$symbol]($style)"
+style = "blue"
+
+[os.symbols]
+Arch = " "
+Linux = " "
+
+[directory]
+style = "blue"
+repo_root_style = "blue"
+truncation_length = 100
+truncate_to_repo = false
+read_only = " 󰌾"
+read_only_style = "red"
+
+[git_branch]
+format = "[$branch]($style) "
+style = "green"
+
+[git_status]
+format = "$ahead_behind$stashed$conflicted$staged$modified$renamed$deleted$untracked"
+ahead = "[⇡$count](green) "
+behind = "[⇣$count](green) "
+diverged = "[⇣$behind_count⇡$ahead_count](green) "
+stashed = "[*$count](green) "
+conflicted = "[~$count](red) "
+staged = "[+$count](yellow) "
+modified = "[!$count](yellow) "
+renamed = "[»$count](yellow) "
+deleted = "[✘$count](yellow) "
+untracked = "[?$count](blue) "
+
+[git_state]
+style = "red"
+
+[status]
+disabled = false
+format = "[✘ $status]($style) "
+style = "red"
+
+[cmd_duration]
+min_time = 3_000
+format = "[$duration]($style) "
+style = "yellow"
+
+[jobs]
+symbol = ""
+number_threshold = 2
+format = "[$symbol$number]($style) "
+style = "red"
+
+[python]
+format = "[(\\($virtualenv\\) )]($style)"
+style = "cyan"
+
+[rust]
+symbol = " "
+format = "[$symbol$version]($style) "
+style = "blue"
+
+[nodejs]
+symbol = " "
+format = "[$symbol$version]($style) "
+style = "green"
+
+[username]
+format = "[$user]($style)"
+style_user = "white"
+style_root = "bold red"
+
+[hostname]
+format = "[@$hostname]($style) "
+style = "white"
+
+[time]
+disabled = false
+format = "[$time]($style)"
+style = "cyan"
+time_format = "%H:%M"
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"

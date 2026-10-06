@@ -7,6 +7,7 @@ export TERMINAL=ghostty BROWSER=$HOME/.local/lib/chromium-profiles/work/chromium
 export GPG_TTY=$(tty)
 export CMAKE_C_COMPILER_LAUNCHER=ccache CMAKE_CXX_COMPILER_LAUNCHER=ccache   # every worktree build shares the cache
 export DOTFILES="$HOME/.dotfiles"
+export STARSHIP_CONFIG="$HOME/.config/starship/personal.toml"   # Omarchy's starship.toml stays stock
 
 for d in "$HOME/.cargo/bin" "$HOME/bin"; do
   case ":$PATH:" in *":$d:"*) ;; *) PATH="$d:$PATH" ;; esac

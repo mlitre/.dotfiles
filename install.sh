@@ -12,7 +12,7 @@
 set -uo pipefail
 
 DOTFILES=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-PACKAGES=(bash git nvim ghostty herdr omarchy)
+PACKAGES=(bash git nvim ghostty herdr starship omarchy)
 mode=${1:-full}
 changes=()
 problems=()

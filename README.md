@@ -45,7 +45,7 @@ repo, or replaced by a plain file and silently untracked. So:
    | `~/.config/nvim/lua/config/options.lua`, `keymaps.lua` | `require("personal.options")`, `require("personal.keymaps")` |
 
    herdr has no include, so `HERDR_CONFIG_PATH` (set in `environment.d`) points it at
-   `personal.toml`. git reads Omarchy's `~/.config/git/config` and then `~/.gitconfig`.
+   `personal.toml`; starship likewise reads `personal.toml` via `STARSHIP_CONFIG`. git reads Omarchy's `~/.config/git/config` and then `~/.gitconfig`.
 
 `install.sh` stows the packages and adds the include lines. `install.sh --ensure` only
 re-adds what is missing (include lines, templates, nvim extras) and reports stow links
@@ -66,6 +66,7 @@ so stow links files, never whole directories, and Omarchy keeps its own files be
 | `nvim/` | `lua/personal/{options,keymaps}.lua`, `lua/plugins/{cpp,rust,telescope,editor}.lua`; `extras.txt` (not stowed) lists the LazyVim extras merged into `lazyvim.json` |
 | `ghostty/` | `personal`: font, keys, opacity |
 | `herdr/` | `personal.toml` and its `environment.d` entry |
+| `starship/` | `personal.toml`: the old p10k lean layout (two lines, status, duration and time on the right) |
 | `git/` | `.gitconfig`, global ignore, the sign-off hook (+ `local`, git-ignored: email, signing key) |
 | `templates/` | not stowed; copied by `install.sh` when missing (see below) |
 
