@@ -1,9 +1,9 @@
 # .dotfiles
 
 Martin's dotfiles for [Omarchy](https://omarchy.org/) (Arch + Hyprland), deployed with GNU Stow.
-Omarchy owns the desktop; this repo layers personal overrides on top of it and keeps the portable
-tools: zsh/oh-my-zsh with powerlevel10k, git, LazyVim (C++/CMake, Rust), Ghostty and herdr. Colors follow the Omarchy
-theme switcher everywhere.
+The setup stays as close to stock Omarchy as possible: bash with Omarchy's aliases and
+starship, Omarchy's LazyVim, Hyprland, Ghostty, herdr and git configs. This repo only adds
+personal layers on top of them. Colors follow the Omarchy theme switcher everywhere.
 
 ## Fresh machine
 
@@ -12,59 +12,80 @@ Install Omarchy first, then:
 ```sh
 git clone git@github.com:mlitre/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-sudo pacman -S --needed stow zsh zsh-autosuggestions zsh-syntax-highlighting
+sudo pacman -S --needed stow jq
 omarchy-install-terminal ghostty
-git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
-git clone --depth 1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 # per-machine files (git-ignored), then edit them
 cp git/.config/git/local.example git/.config/git/local          # email, GPG signing key
-cp zsh/.config/zsh/local.zsh.example zsh/.config/zsh/local.zsh
-cp ghostty/.config/ghostty/config.example ~/.config/ghostty/config
+cp bash/.config/bash/local.bash.example bash/.config/bash/local.bash
 
-# Omarchy ships its own versions of these; move them aside before the first stow
-mv ~/.config/nvim ~/.config/nvim.omarchy
-for f in hyprland input bindings looknfeel; do mv ~/.config/hypr/$f.lua ~/.config/hypr/$f.lua.omarchy; done
-
-stow ghostty herdr zsh git nvim omarchy
-sudo chsh -s /usr/bin/zsh "$USER"
+./install.sh
 ```
 
-Then reapply the [live Omarchy settings](#live-omarchy-settings) below.
+Log out and back in (for `environment.d`), then reapply the
+[live Omarchy settings](#live-omarchy-settings) below.
+
+## Coexisting with Omarchy
+
+Omarchy seeds files into `$HOME` (everything under `/etc/skel`) and its migrations patch
+them in place during `omarchy update`; `omarchy reinstall` copies `/etc/skel` over them
+again. A stow symlink in one of those spots either gets written through, overwriting the
+repo, or replaced by a plain file and silently untracked. So:
+
+1. **Omarchy owns every file it seeds.** They stay plain, stock files and are never stowed.
+2. **This repo only adds files Omarchy never ships** (`hypr/personal/`, `nvim/lua/personal/`,
+   `bash/*.bash`, `ghostty/personal`, `herdr/personal.toml`, ...).
+3. **One include line per tool** in Omarchy's entry point loads them:
+
+   | Omarchy file | Line |
+   | --- | --- |
+   | `~/.bashrc` | `source ~/.config/bash/init.bash` |
+   | `~/.config/hypr/hyprland.lua` | `require("hypr.personal")` |
+   | `~/.config/ghostty/config` | `config-file = personal` |
+   | `~/.config/nvim/lua/config/options.lua`, `keymaps.lua` | `require("personal.options")`, `require("personal.keymaps")` |
+
+   herdr has no include, so `HERDR_CONFIG_PATH` (set in `environment.d`) points it at
+   `personal.toml`. git reads Omarchy's `~/.config/git/config` and then `~/.gitconfig`.
+
+`install.sh` stows the packages and adds the include lines. `install.sh --ensure` only
+re-adds what is missing (include lines, templates, nvim extras) and reports stow links
+that became plain files; Omarchy's `post-update` and `post-boot` hooks run it, so an update
+or reinstall that drops a line heals itself and sends a notification.
 
 ## Layout
 
 Each top-level directory is a stow package that mirrors `$HOME`. `.stowrc` sets `--no-folding`,
-so stow links files, never whole directories, and Omarchy can keep its own files beside ours.
+so stow links files, never whole directories, and Omarchy keeps its own files beside ours.
 
 | Package | What |
 | --- | --- |
-| `omarchy/.config/hypr/` | `hyprland.lua` (Omarchy's entry point plus `require("hypr.windows")`), and overrides loaded after Omarchy's defaults: `input.lua`, `windows.lua`, `bindings.lua`, `looknfeel.lua` |
-| `omarchy/.config/omarchy/bar/scripts/cpu` | CPU, temperature and memory readout for the bar |
-| `omarchy/.local/lib/chromium-profiles/`, `omarchy/.local/share/applications/chromium-*.desktop` | Chromium Work and Personal launchers, see [Browser](#browser) |
-| `ghostty/.config/ghostty/personal` | font, keys, opacity; loaded after the Omarchy theme so it wins |
-| `nvim/.config/nvim/` | LazyVim. `lua/plugins/theme.lua` links to Omarchy's current theme and hot-reloads on theme switch |
-| `zsh/` | `.zshrc`, `.p10k.zsh` (prompt layout), `.config/zsh/{aliases,functions}.zsh` (+ `local.zsh`, git-ignored) |
+| `bash/` | `.config/bash/{init,aliases,functions}.bash` (+ `local.bash`, git-ignored) |
+| `omarchy/.config/hypr/` | `personal.lua` and `personal/{input,bindings,looknfeel,windows}.lua` |
+| `omarchy/.config/omarchy/` | the bar's CPU readout script, and the `--ensure` hooks |
+| `omarchy/.local/lib/chromium-profiles/` | Chromium Work and Personal launchers, see [Browser](#browser) |
+| `nvim/` | `lua/personal/{options,keymaps}.lua`, `lua/plugins/{cpp,rust,telescope,editor}.lua`; `extras.txt` (not stowed) lists the LazyVim extras merged into `lazyvim.json` |
+| `ghostty/` | `personal`: font, keys, opacity |
+| `herdr/` | `personal.toml` and its `environment.d` entry |
 | `git/` | `.gitconfig`, global ignore, the sign-off hook (+ `local`, git-ignored: email, signing key) |
-| `herdr/` | herdr config |
-| `legacy/` | the previous CachyOS + Noctalia desktop (hypr, noctalia, fuzzel, uwsm, `dot`, bootstrap). Not stowed; kept for reference |
+| `templates/` | not stowed; copied by `install.sh` when missing (see below) |
 
-Packages that ship a `*.example` also carry a `.stow-local-ignore`, so the example is never linked.
+The pre-vanilla setup (zsh/oh-my-zsh/p10k, the old CachyOS + Noctalia desktop) is in git
+history at the `pre-vanilla-omarchy` tag.
 
 ## Not stowed, on purpose
 
-Some files are rewritten in place by the tool that owns them. A stowed symlink there gets
-replaced with a plain file and silently stops tracking the repo, so these stay live files:
+Some files are rewritten in place by the tool that owns them, so they stay live files:
 
 | File | Rewritten by | How it's handled |
 | --- | --- | --- |
-| `~/.config/ghostty/config` | Omarchy's text-size tool (`sed -i` on `font-size`) | copied from `config.example`; holds only `font-size` and includes the theme, then `personal` |
+| `~/.local/share/applications/chromium-*.desktop` | `xdg-settings` (`MimeType=`) | copied from `templates/applications/` when missing |
+| `~/.config/nvim/lazyvim.json` | LazyVim, `:LazyExtras` | extras from `nvim/extras.txt` merged in, never removed |
+| `~/.config/nvim/lazy-lock.json` | lazy.nvim | not versioned |
 | `~/.config/omarchy/shell.json` | bar gestures, `omarchy bar ...` | edited live, see below |
 | `~/.config/omarchy/shell.toml` | Omarchy's text-size tool | edited live, see below |
 | `~/.config/hypr/monitors.lua` | Omarchy's monitor scaling | left to Omarchy |
 | `~/.config/btop/btop.conf` | btop, on every exit | edited live, see below |
 | `~/.config/mimeapps.list` | `xdg-settings`, `xdg-mime` | set by command, see [Browser](#browser) |
-| `~/.p10k.zsh` | `p10k configure` | stowed; after reconfiguring, check it is still a link (`restow` if not) |
 
 ## Live Omarchy settings
 
@@ -150,9 +171,13 @@ See everything with `omarchy menu keybindings --print` (or `Super+K`).
 
 ## Daily commands
 
+Omarchy's own aliases (`ff`, `eff`, `zd`/`cd`, `n`, `g`, `t`, ...) are in
+`$OMARCHY_PATH/default/bash/aliases`; `bash/.config/bash/aliases.bash` only adds to them.
+
+
 | Task | Command |
 | --- | --- |
-| Re-link after `git pull` | `restow` |
+| Re-link after `git pull` | `dots-install` (`./install.sh`) |
 | Switch theme everywhere | `theme <name>` (`omarchy theme set`) or `Super+Ctrl+Shift+Space` |
 | Check Hyprland config | `hyprctl reload && hyprctl configerrors` |
 | Reload terminals | `omarchy restart terminal` |
