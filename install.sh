@@ -2,7 +2,8 @@
 # Layer these dotfiles over Omarchy.
 #
 #   install.sh           stow the packages, then everything --ensure does
-#   install.sh --ensure  re-add include lines, templates and nvim extras; report
+#   install.sh --ensure  re-add include lines, templates, nvim extras and the
+#                        bar's CPU widget; report
 #                        stow links that turned into plain files. Never stows.
 #                        Runs from Omarchy's post-update and post-boot hooks.
 #
@@ -81,6 +82,30 @@ ensure_nvim_extras() {
   fi
 }
 
+# The shell rewrites shell.json itself and a refresh resets it, so the CPU
+# widget is re-added after the workspaces unless some entry already has its id.
+ensure_bar_widget() {
+  local json=~/.config/omarchy/shell.json
+  [[ -f $json ]] || return 0
+  command -v jq >/dev/null || { problems+=("jq missing; bar widget not added"); return 0; }
+  local merged
+  if ! merged=$(jq '
+    def widget: {id: "cpu", type: "command", exec: "~/.config/omarchy/bar/scripts/cpu",
+      interval: 3, tooltip: "CPU and memory", onClick: "omarchy-launch-or-focus-tui btop"};
+    if [.bar.layout[]?[]? | select(.id == "cpu")] | length > 0 then .
+    else .bar.layout.left = ((.bar.layout.left // []) as $l
+      | ([$l | to_entries[] | select(.value.id == "omarchy.workspaces") | .key][0] // ($l | length - 1)) as $i
+      | $l[:$i + 1] + [widget] + $l[$i + 1:])
+    end' "$json"); then
+    problems+=("could not parse $json; bar widget not added")
+    return 0
+  fi
+  if [[ $merged != "$(jq . "$json")" ]]; then
+    printf '%s\n' "$merged" >"$json"   # in place: keeps the inode and mode
+    changes+=("added the CPU widget to the bar")
+  fi
+}
+
 check_links() {
   local out
   out=$(stow -n -d "$DOTFILES" -t ~ "${PACKAGES[@]}" 2>&1 | grep -E 'existing target|cannot stow' || true)
@@ -111,5 +136,6 @@ esac
 ensure_includes
 ensure_templates
 ensure_nvim_extras
+ensure_bar_widget
 check_links
 report

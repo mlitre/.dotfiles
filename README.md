@@ -48,9 +48,9 @@ repo, or replaced by a plain file and silently untracked. So:
    `personal.toml`; starship likewise reads `personal.toml` via `STARSHIP_CONFIG`. git reads Omarchy's `~/.config/git/config` and then `~/.gitconfig`.
 
 `install.sh` stows the packages and adds the include lines. `install.sh --ensure` only
-re-adds what is missing (include lines, templates, nvim extras) and reports stow links
-that became plain files; Omarchy's `post-update` and `post-boot` hooks run it, so an update
-or reinstall that drops a line heals itself and sends a notification.
+re-adds what is missing (include lines, templates, nvim extras, the bar's CPU widget) and
+reports stow links that became plain files; Omarchy's `post-update` and `post-boot` hooks run
+it, so an update or reinstall that drops a line heals itself and sends a notification.
 
 ## Layout
 
@@ -82,7 +82,7 @@ Some files are rewritten in place by the tool that owns them, so they stay live 
 | `~/.local/share/applications/chromium-*.desktop` | `xdg-settings` (`MimeType=`) | copied from `templates/applications/` when missing |
 | `~/.config/nvim/lazyvim.json` | LazyVim, `:LazyExtras` | extras from `nvim/extras.txt` merged in, never removed |
 | `~/.config/nvim/lazy-lock.json` | lazy.nvim | not versioned |
-| `~/.config/omarchy/shell.json` | bar gestures, `omarchy bar ...` | edited live, see below |
+| `~/.config/omarchy/shell.json` | bar gestures, `omarchy bar ...`, `omarchy refresh shell` | CPU widget added after the workspaces when missing |
 | `~/.config/omarchy/shell.toml` | Omarchy's text-size tool | edited live, see below |
 | `~/.config/hypr/monitors.lua` | Omarchy's monitor scaling | left to Omarchy |
 | `~/.config/btop/btop.conf` | btop, on every exit | edited live, see below |
@@ -91,13 +91,6 @@ Some files are rewritten in place by the tool that owns them, so they stay live 
 ## Live Omarchy settings
 
 Reapply these by hand on a new machine or after `omarchy refresh shell`:
-
-- **CPU and memory in the bar**: in `~/.config/omarchy/shell.json`, add after
-  `omarchy.workspaces` in `bar.layout.left`:
-
-  ```json
-  { "id": "cpu", "type": "command", "exec": "~/.config/omarchy/bar/scripts/cpu", "interval": 3, "tooltip": "CPU and memory", "onClick": "omarchy-launch-or-focus-tui btop" }
-  ```
 
 - **Taller bar**: in `~/.config/omarchy/shell.toml`:
 
