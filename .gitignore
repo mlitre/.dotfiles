@@ -1,6 +1,6 @@
 # per-machine overrides (commit the *.example next to them instead)
 legacy/hypr/.config/hypr/config/local.lua
-zsh/.config/zsh/local.zsh
+bash/.config/bash/local.bash
 git/.config/git/local
 legacy/btop/.config/btop/btop.conf
 # editor / OS noise
