@@ -49,10 +49,11 @@ nosnap() {
 
 # everest MQTT broker: eclipse-mosquitto in podman, using the repo's mosquitto.conf
 # (listener 1883 + websockets 9001, allow_anonymous). Replaces any existing container.
+# Published on loopback only: the config allows anonymous clients.
 EVEREST_MOSQUITTO_CONF="$HOME/Projects/everest-workspace/everest/applications/containers/mosquitto/mosquitto.conf"
 mqtt-up() {
   podman rm -f mqtt >/dev/null 2>&1
-  podman run -d --name mqtt -p 1883:1883 -p 9001:9001 \
+  podman run -d --name mqtt -p 127.0.0.1:1883:1883 -p 127.0.0.1:9001:9001 \
     -v "$EVEREST_MOSQUITTO_CONF:/mosquitto/config/mosquitto.conf:ro" \
     docker.io/library/eclipse-mosquitto:2.0.18
 }
