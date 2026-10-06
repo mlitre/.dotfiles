@@ -3,7 +3,7 @@
 #
 #   install.sh           stow the packages, then everything --ensure does
 #   install.sh --ensure  re-add include lines, templates, nvim extras and the
-#                        bar's CPU widget; report
+#                        bar entries in omarchy/bar.json; report
 #                        stow links that turned into plain files. Never stows.
 #                        Runs from Omarchy's post-update and post-boot hooks.
 #
@@ -82,27 +82,43 @@ ensure_nvim_extras() {
   fi
 }
 
-# The shell rewrites shell.json itself and a refresh resets it, so the CPU
-# widget is re-added after the workspaces unless some entry already has its id.
-ensure_bar_widget() {
-  local json=~/.config/omarchy/shell.json
-  [[ -f $json ]] || return 0
-  command -v jq >/dev/null || { problems+=("jq missing; bar widget not added"); return 0; }
-  local merged
-  if ! merged=$(jq '
-    def widget: {id: "cpu", type: "command", exec: "~/.config/omarchy/bar/scripts/cpu",
-      interval: 3, tooltip: "CPU and memory", onClick: "omarchy-launch-or-focus-tui btop"};
-    if [.bar.layout[]?[]? | select(.id == "cpu")] | length > 0 then .
-    else .bar.layout.left = ((.bar.layout.left // []) as $l
-      | ([$l | to_entries[] | select(.value.id == "omarchy.workspaces") | .key][0] // ($l | length - 1)) as $i
-      | $l[:$i + 1] + [widget] + $l[$i + 1:])
-    end' "$json"); then
-    problems+=("could not parse $json; bar widget not added")
+# The shell rewrites shell.json itself and a refresh resets it to Omarchy's
+# default. Each omarchy/bar.json entry is inserted when its id is missing, and
+# applied over an entry still equal to Omarchy's default; an entry changed
+# since is left alone. Plugins are reported, never cloned: a new upstream
+# commit is unreviewed code.
+ensure_bar() {
+  local json=~/.config/omarchy/shell.json spec=$DOTFILES/omarchy/bar.json
+  local defaults=${OMARCHY_PATH:-/usr/share/omarchy}/config/omarchy/shell.json
+  [[ -f $json && -r $spec ]] || return 0
+  command -v jq >/dev/null || { problems+=("jq missing; bar not checked"); return 0; }
+  local id url installed=() merged
+  while IFS=$'\t' read -r id url; do
+    if [[ -d ~/.config/omarchy/plugins/$id ]]; then
+      installed+=("$id")
+    else
+      problems+=("bar plugin $id missing; review it, then: omarchy plugin add $url --enable")
+    fi
+  done < <(jq -r '.[] | select(.plugin) | [.entry.id, .plugin] | @tsv' "$spec")
+  if ! merged=$(jq --slurpfile spec "$spec" --slurpfile defaults "$defaults" \
+    --argjson installed "$(printf '%s\n' "${installed[@]}" | jq -R 'select(. != "")' | jq -s .)" '
+    def stock($id): [$defaults[0].bar.layout[]?[]? | select(.id == $id)][0];
+    reduce ($spec[0][] | select((.plugin | not) or (.entry.id | IN($installed[])))) as $w (.;
+      $w.entry.id as $id | stock($id) as $stock |
+      if any(.bar.layout[]?[]?; .id == $id) then
+        .bar.layout |= map_values(map(
+          if .id == $id and $stock != null and . == $stock then $stock * $w.entry else . end))
+      else
+        .bar.layout[$w.section] = ((.bar.layout[$w.section] // []) as $l
+          | ([$l | to_entries[] | select(.value.id == $w.after) | .key][0] // ($l | length - 1)) as $i
+          | $l[:$i + 1] + [$w.entry] + $l[$i + 1:])
+      end)' "$json"); then
+    problems+=("could not apply omarchy/bar.json to $json")
     return 0
   fi
   if [[ $merged != "$(jq . "$json")" ]]; then
     printf '%s\n' "$merged" >"$json"   # in place: keeps the inode and mode
-    changes+=("added the CPU widget to the bar")
+    changes+=("restored bar entries from omarchy/bar.json")
   fi
 }
 
@@ -136,6 +152,6 @@ esac
 ensure_includes
 ensure_templates
 ensure_nvim_extras
-ensure_bar_widget
+ensure_bar
 check_links
 report

@@ -48,9 +48,10 @@ repo, or replaced by a plain file and silently untracked. So:
    `personal.toml`; starship likewise reads `personal.toml` via `STARSHIP_CONFIG`. git reads Omarchy's `~/.config/git/config` and then `~/.gitconfig`.
 
 `install.sh` stows the packages and adds the include lines. `install.sh --ensure` only
-re-adds what is missing (include lines, templates, nvim extras, the bar's CPU widget) and
-reports stow links that became plain files; Omarchy's `post-update` and `post-boot` hooks run
-it, so an update or reinstall that drops a line heals itself and sends a notification.
+re-adds what is missing (include lines, templates, nvim extras, the bar entries in
+`omarchy/bar.json`) and reports stow links that became plain files; Omarchy's `post-update`
+and `post-boot` hooks run it, so an update or reinstall that drops a line heals itself and
+sends a notification.
 
 ## Layout
 
@@ -62,6 +63,7 @@ so stow links files, never whole directories, and Omarchy keeps its own files be
 | `bash/` | `.config/bash/{init,aliases,functions}.bash` (+ `local.bash`, git-ignored) |
 | `omarchy/.config/hypr/` | `personal.lua` and `personal/{input,bindings,looknfeel,windows}.lua` |
 | `omarchy/.config/omarchy/` | the bar's CPU readout script, and the `--ensure` hooks |
+| `omarchy/bar.json` | not stowed; the bar entries `--ensure` restores (see below) |
 | `omarchy/.local/lib/chromium-profiles/` | Chromium Work and Personal launchers, see [Browser](#browser) |
 | `nvim/` | `lua/personal/{options,keymaps}.lua`, `lua/plugins/{cpp,rust,telescope,editor}.lua`; `extras.txt` (not stowed) lists the LazyVim extras merged into `lazyvim.json` |
 | `ghostty/` | `personal`: font, keys, opacity |
@@ -82,7 +84,7 @@ Some files are rewritten in place by the tool that owns them, so they stay live 
 | `~/.local/share/applications/chromium-*.desktop` | `xdg-settings` (`MimeType=`) | copied from `templates/applications/` when missing |
 | `~/.config/nvim/lazyvim.json` | LazyVim, `:LazyExtras` | extras from `nvim/extras.txt` merged in, never removed |
 | `~/.config/nvim/lazy-lock.json` | lazy.nvim | not versioned |
-| `~/.config/omarchy/shell.json` | bar gestures, `omarchy bar ...`, `omarchy refresh shell` | CPU widget added after the workspaces when missing |
+| `~/.config/omarchy/shell.json` | bar gestures, `omarchy bar ...`, `omarchy refresh shell` | `omarchy/bar.json` entries inserted when missing, applied over an entry still at Omarchy's default |
 | `~/.config/omarchy/shell.toml` | Omarchy's text-size tool | edited live, see below |
 | `~/.config/hypr/monitors.lua` | Omarchy's monitor scaling | left to Omarchy |
 | `~/.config/btop/btop.conf` | btop, on every exit | edited live, see below |
@@ -92,7 +94,8 @@ Some files are rewritten in place by the tool that owns them, so they stay live 
 
 Reapply these by hand on a new machine or after `omarchy refresh shell`:
 
-- **Bar plugins**, reviewed before install:
+- **Bar plugins**, reviewed before install. `--ensure` puts their bar entries back but never
+  clones them, since a new upstream commit is unreviewed code; it reports a missing one instead:
 
   ```sh
   omarchy plugin add https://github.com/ax1g/quickshell-screentime-plugin.git --enable
@@ -104,9 +107,12 @@ Reapply these by hand on a new machine or after `omarchy refresh shell`:
   in `~/.config/environment.d/60-omarchy-github.conf` as `GH_TOKEN=...`; `init.bash` unsets
   it in interactive shells so `gh` there keeps its own login.
 
-- **Taller bar**: in `~/.config/omarchy/shell.toml`:
+- **Text size and taller bar**: in `~/.config/omarchy/shell.toml`:
 
   ```toml
+  [font]
+  base-size = 12
+
   [bar]
   size-horizontal = 32
   ```

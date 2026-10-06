@@ -1,0 +1,53 @@
+[
+  {
+    "section": "left",
+    "after": "omarchy.workspaces",
+    "entry": {
+      "id": "cpu",
+      "type": "command",
+      "exec": "~/.config/omarchy/bar/scripts/cpu",
+      "interval": 3,
+      "tooltip": "CPU and memory",
+      "onClick": "omarchy-launch-or-focus-tui btop"
+    }
+  },
+  {
+    "section": "center",
+    "entry": {
+      "id": "omarchy.clock",
+      "format": "ddd d MMM HH:mm"
+    }
+  },
+  {
+    "section": "right",
+    "after": "omarchy.tray",
+    "plugin": "https://github.com/robzolkos/omarchy-github.git",
+    "entry": {
+      "id": "robzolkos.github",
+      "includeForks": true,
+      "repositoryScope": "Owned and organizations"
+    }
+  },
+  {
+    "section": "right",
+    "after": "robzolkos.github",
+    "plugin": "https://github.com/ax1g/quickshell-screentime-plugin.git",
+    "entry": {
+      "id": "agx.screen-time"
+    }
+  },
+  {
+    "section": "right",
+    "after": "agx.screen-time",
+    "entry": {
+      "id": "omarchy.tailscale"
+    }
+  },
+  {
+    "section": "right",
+    "entry": {
+      "id": "omarchy.power",
+      "showPercentage": true
+    }
+  }
+]
