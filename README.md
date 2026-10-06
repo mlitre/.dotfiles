@@ -92,6 +92,18 @@ Some files are rewritten in place by the tool that owns them, so they stay live 
 
 Reapply these by hand on a new machine or after `omarchy refresh shell`:
 
+- **Bar plugins**, reviewed before install:
+
+  ```sh
+  omarchy plugin add https://github.com/ax1g/quickshell-screentime-plugin.git --enable
+  omarchy plugin add https://github.com/robzolkos/omarchy-github.git --enable
+  ```
+
+  The GitHub plugin reads `GH_TOKEN`, so it gets a classic token scoped to `notifications`,
+  `read:org` and `read:user` instead of the `gh` login. It lives, unversioned and mode 600,
+  in `~/.config/environment.d/60-omarchy-github.conf` as `GH_TOKEN=...`; `init.bash` unsets
+  it in interactive shells so `gh` there keeps its own login.
+
 - **Taller bar**: in `~/.config/omarchy/shell.toml`:
 
   ```toml

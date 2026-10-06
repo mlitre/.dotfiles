@@ -8,6 +8,7 @@ export GPG_TTY=$(tty)
 export CMAKE_C_COMPILER_LAUNCHER=ccache CMAKE_CXX_COMPILER_LAUNCHER=ccache   # every worktree build shares the cache
 export DOTFILES="$HOME/.dotfiles"
 export STARSHIP_CONFIG="$HOME/.config/starship/personal.toml"   # Omarchy's starship.toml stays stock
+unset GH_TOKEN   # session-wide only for the bar's GitHub plugin; gh here keeps its own login
 
 for d in "$HOME/.cargo/bin" "$HOME/bin"; do
   case ":$PATH:" in *":$d:"*) ;; *) PATH="$d:$PATH" ;; esac
