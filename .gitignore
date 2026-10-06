@@ -8,4 +8,3 @@ legacy/btop/.config/btop/btop.conf
 .DS_Store
 # wallpapers are yours; keep only small curated ones
 legacy/wallpapers/**/*.psd
-ghostty/.config/ghostty/config
