@@ -1,0 +1,3 @@
+#!/bin/bash
+# Re-add include lines Omarchy may have dropped; see install.sh.
+exec "$HOME/.dotfiles/install.sh" --ensure
