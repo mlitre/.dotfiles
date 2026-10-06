@@ -3,10 +3,9 @@
 onboarding = false
 
 [theme]
-name = "terminal"   # follows Ghostty ANSI palette -> switches with `dot theme`
+name = "terminal"   # follows the terminal palette, so it switches with the Omarchy theme
 
 [terminal]
-default_shell = "zsh"
 shell_mode = "auto"
 new_cwd = "follow"
 
