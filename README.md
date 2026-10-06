@@ -158,6 +158,7 @@ See everything with `omarchy menu keybindings --print` (or `Super+K`).
 | `Super+Q` | close window (Omarchy's `Super+W` still works) |
 | `Super+L` | lock (was Omarchy's workspace layout toggle) |
 | `Super+Shift+L` | toggle workspace layout |
+| `Super+D` (hold) / `Super+Alt+D` | dictation push-to-talk / hands-free toggle (were `F9`, `Super+Ctrl+X`) |
 | `Super+Shift+B` / `Return` | Chromium, Work profile (`Alt` for incognito) |
 | `Super+Shift+Ctrl+B` / `Return` | Chromium, Personal profile |
 | `Super+Shift+C` / `E` / `Alt+E` | Google Calendar, Gmail, new Gmail (Work) |

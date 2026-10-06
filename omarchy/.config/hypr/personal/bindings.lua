@@ -42,3 +42,13 @@ if o.preinstalled_bindings_enabled() then
   webapp("SUPER + SHIFT + X", "X", "https://x.com/", PERSONAL)
   webapp("SUPER + SHIFT + ALT + X", "X Post", "https://x.com/compose/post", PERSONAL)
 end
+
+-- Dictation: hold Super+D to talk (the Voyager has no F-row for Omarchy's F9),
+-- Super+Alt+D to toggle hands-free.
+if o.cmd_present("voxtype") then
+  hl.unbind("F9")
+  hl.unbind("SUPER + CTRL + X")
+  o.bind("SUPER + D", "Start dictation (push-to-talk)", "voxtype record start")
+  o.bind("SUPER + D", "Stop dictation (push-to-talk)", "voxtype record stop", { release = true })
+  o.bind("SUPER + ALT + D", "Toggle dictation", "voxtype record toggle")
+end
