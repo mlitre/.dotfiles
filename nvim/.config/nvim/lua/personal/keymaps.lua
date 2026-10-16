@@ -39,3 +39,5 @@ map("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], {
 map("n", "<leader>cx", "<cmd>!chmod +x %<CR>", { silent = true, desc = "chmod +x current file" })
 map("n", "<leader>X", function() vim.cmd("so") end, { desc = "Source current file" })
 map("n", "<leader>pv", vim.cmd.Ex, { desc = "Explore file's directory (netrw)" })
+
+map("n", "<leader>a", function() require("harpoon"):list():add() end, { desc = "Harpoon file" })

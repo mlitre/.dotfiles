@@ -16,4 +16,4 @@ opt.isfname:append("@-@")
 opt.relativenumber = true       -- Omarchy's options.lua turns it off
 
 vim.g.lazyvim_picker = "telescope"
-vim.g.autoformat = false        -- <leader>cf formats on demand; clang-format rules vary per repo
+vim.g.autoformat = true         -- format on save; <leader>uf toggles
