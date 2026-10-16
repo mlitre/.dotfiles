@@ -41,3 +41,7 @@ map("n", "<leader>X", function() vim.cmd("so") end, { desc = "Source current fil
 map("n", "<leader>pv", vim.cmd.Ex, { desc = "Explore file's directory (netrw)" })
 
 map("n", "<leader>a", function() require("harpoon"):list():add() end, { desc = "Harpoon file" })
+map("n", "<C-e>", function()
+  local harpoon = require("harpoon")
+  harpoon.ui:toggle_quick_menu(harpoon:list())
+end, { desc = "Harpoon menu" })
