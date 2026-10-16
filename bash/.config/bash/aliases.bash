@@ -1,5 +1,8 @@
 # Additions to Omarchy's aliases ($OMARCHY_PATH/default/bash/aliases).
 
+# Omarchy's n opens `nvim .` with no args, which skips the dashboard
+n() { command nvim "$@"; }
+
 # git
 alias gstatus='git fetch && git status'
 alias gcheckout='git fetch && git checkout'

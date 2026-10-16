@@ -11,6 +11,4 @@ return {
     },
   },
   { "nvim-lualine/lualine.nvim", opts = { options = { theme = "auto" } } },
-  -- `nvim .` opens netrw instead of the Snacks explorer; <leader>e still toggles it
-  { "folke/snacks.nvim", opts = { explorer = { replace_netrw = false } } },
 }
