@@ -98,9 +98,13 @@ Reapply these by hand on a new machine or after `omarchy refresh shell`:
   clones them, since a new upstream commit is unreviewed code; it reports a missing one instead:
 
   ```sh
-  omarchy plugin add https://github.com/ax1g/quickshell-screentime-plugin.git --enable
   omarchy plugin add https://github.com/robzolkos/omarchy-github.git --enable
+  omarchy plugin add https://github.com/kevincardwell/omarchy-sony-xm3 --enable
+  ~/.config/omarchy/plugins/io.github.kevincardwell.omasonyxm3/setup
   ```
+
+  The Sony XM3 plugin's `setup` builds its daemon and installs the user units
+  `sony-xm3.service` and `sony-xm3.socket`.
 
   The GitHub plugin reads `GH_TOKEN`, so it gets a classic token scoped to `notifications`,
   `read:org` and `read:user` instead of the `gh` login. It lives, unversioned and mode 600,

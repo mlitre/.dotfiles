@@ -31,16 +31,16 @@
   {
     "section": "right",
     "after": "robzolkos.github",
-    "plugin": "https://github.com/ax1g/quickshell-screentime-plugin.git",
     "entry": {
-      "id": "agx.screen-time"
+      "id": "omarchy.tailscale"
     }
   },
   {
     "section": "right",
-    "after": "agx.screen-time",
+    "after": "omarchy.audio",
+    "plugin": "https://github.com/kevincardwell/omarchy-sony-xm3",
     "entry": {
-      "id": "omarchy.tailscale"
+      "id": "io.github.kevincardwell.omasonyxm3"
     }
   },
   {
