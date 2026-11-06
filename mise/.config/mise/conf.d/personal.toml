@@ -1,0 +1,13 @@
+# Global tools. mise and Omarchy rewrite config.toml, so they live here.
+[tools]
+gitleaks = "8.30.1"
+go = "latest"
+"http:ngrok" = { version = "3", url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz" }
+"npm:chrome-devtools-axi" = "latest"
+"npm:gh-axi" = "latest"
+"npm:lavish-axi" = "latest"
+"npm:quota-axi" = "latest"
+"npm:tasks-axi" = "latest"
+"pipx:clang-format" = "15.0.6"
+podman = { version = "latest", rename_exe = "podman-remote" }
+python = "latest"

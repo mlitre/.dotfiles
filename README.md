@@ -69,6 +69,7 @@ so stow links files, never whole directories, and Omarchy keeps its own files be
 | `ghostty/` | `personal`: font, keys, opacity |
 | `herdr/` | `personal.toml` and its `environment.d` entry |
 | `starship/` | `personal.toml`: the old p10k lean layout (two lines, status, duration and time on the right) |
+| `mise/` | `conf.d/personal.toml`: global tools (axi CLIs, go, python, podman, ...); `mise use -g` writes to `config.toml`, so move new tools here by hand |
 | `git/` | `.gitconfig`, global ignore, the sign-off hook (+ `local`, git-ignored: email, signing key) |
 | `templates/` | not stowed; copied by `install.sh` when missing (see below) |
 
