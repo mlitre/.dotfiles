@@ -52,3 +52,8 @@ if o.cmd_present("voxtype") then
   o.bind("SUPER + D", "Stop dictation (push-to-talk)", "voxtype record stop", { release = true })
   o.bind("SUPER + ALT + D", "Toggle dictation", "voxtype record toggle")
 end
+
+-- Laptop display toggle: off SUPER+CTRL+Delete (one key from CTRL+ALT+Delete,
+-- which closes all windows), onto the Display panel's key plus SHIFT.
+hl.unbind("SUPER + CTRL + Delete")
+o.bind("SUPER + SHIFT + CTRL + D", "Toggle laptop display", "omarchy-hyprland-monitor-internal toggle")
