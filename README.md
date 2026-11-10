@@ -99,7 +99,6 @@ Reapply these by hand on a new machine or after `omarchy refresh shell`:
   clones them, since a new upstream commit is unreviewed code; it reports a missing one instead:
 
   ```sh
-  omarchy plugin add https://github.com/robzolkos/omarchy-github.git --enable
   omarchy plugin add https://github.com/kevincardwell/omarchy-sony-xm3 --enable
   ~/.config/omarchy/plugins/io.github.kevincardwell.omasonyxm3/setup
   ```
@@ -107,10 +106,10 @@ Reapply these by hand on a new machine or after `omarchy refresh shell`:
   The Sony XM3 plugin's `setup` builds its daemon and installs the user units
   `sony-xm3.service` and `sony-xm3.socket`.
 
-  The GitHub plugin reads `GH_TOKEN`, so it gets a classic token scoped to `notifications`,
-  `read:org` and `read:user` instead of the `gh` login. It lives, unversioned and mode 600,
-  in `~/.config/environment.d/60-omarchy-github.conf` as `GH_TOKEN=...`; `init.bash` unsets
-  it in interactive shells so `gh` there keeps its own login.
+  The omaworkday jobs read `GH_TOKEN`, so they get a classic token scoped to `notifications`,
+  `read:org`, `read:user` and `repo` instead of the `gh` login. It lives, unversioned and
+  mode 600, in `~/.config/environment.d/60-omarchy-github.conf` as `GH_TOKEN=...`;
+  `init.bash` unsets it in interactive shells so `gh` there keeps its own login.
 
 - **Text size and taller bar**: in `~/.config/omarchy/shell.toml`:
 

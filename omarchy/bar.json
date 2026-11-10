@@ -20,17 +20,7 @@
   },
   {
     "section": "right",
-    "after": "omarchy.tray",
-    "plugin": "https://github.com/robzolkos/omarchy-github.git",
-    "entry": {
-      "id": "robzolkos.github",
-      "includeForks": true,
-      "repositoryScope": "Owned and organizations"
-    }
-  },
-  {
-    "section": "right",
-    "after": "robzolkos.github",
+    "after": "omarchy.keyboard-layout",
     "entry": {
       "id": "omarchy.tailscale"
     }
